@@ -7,18 +7,32 @@
     <link type="text/css" rel="stylesheet" href="../blog.css">
 
     <meta property="og:type" content="article"/>
+    <meta name="twitter:card" content="summary" />
+
     <meta property="og:site_name" content="archiloque.net"/>
+
     <meta property="og:title" content="<%= article_title %>"/>
+    <meta property="twitter:title" content="<%= article_title %>"/>
+
     <% if article_description %>
     <meta property="og:description" content="<%= article_description %>"/>
+    <meta property="twitter:description" content="<%= article_description %>"/>
     <% end %>
+
     <% if author_fb_url %>
     <meta property="article:author" content="<%= author_fb_url %>"/>
     <% end %>
+
+    <% if author_twitter_url %>
+    <meta property="twitter:site" content="<%= author_twitter_url %>"/>
+    <% end %>
+
     <meta property="og:locale" content="fr_FR"/>
     <meta property="og:url" content="<%= article_root_url %>"/>
+
     <% if article_image %>
     <meta property="og:image" content="<%= " #{article_root_url}#{article_image}" %>" />
+    <meta property="twitter:image" content="<%= " #{article_root_url}#{article_image}" %>" />
     <% end %>
 
 </head>

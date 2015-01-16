@@ -124,6 +124,7 @@ ARTICLES.each do |article|
                 :article_author => article.author,
                 :author_url => AUTHORS[article.author]['main_url'],
                 :author_fb_url => AUTHORS[article.author]['fb_url'],
+                :author_twitter_url => AUTHORS[article.author]['twitter_url'],
                 :article_date => article.date,
                 :article_description => article.description,
                 :article_image => article.image
