@@ -18,10 +18,8 @@
     <meta property="og:locale" content="fr_FR"/>
     <meta property="og:url" content="<%= article_root_url %>"/>
     <% if article_image %>
-    <meta property="og:image" content="<%= " #{article_root_url}/#{article_image}" %>" />
+    <meta property="og:image" content="<%= " #{article_root_url}#{article_image}" %>" />
     <% end %>
-    <meta property="og:type" content="article"/>
-
 
 </head>
 <body>

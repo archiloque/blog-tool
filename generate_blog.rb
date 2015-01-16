@@ -118,7 +118,7 @@ ARTICLES.each do |article|
             Object.new,
             {
                 :blog_root_url => BLOG_ROOT_URL,
-                :article_root_url => BLOG_ROOT_URL + article.dir_name,
+                :article_root_url => BLOG_ROOT_URL + article.dir_name + '/',
                 :article_content => article.content,
                 :article_title => article.title,
                 :article_author => article.author,
