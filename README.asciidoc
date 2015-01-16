@@ -1,0 +1,3 @@
+Tool to create my link:http://archiloque.net/blog[blog] from the link:http://github.com/archiloque/blog/tree/master/brouillons/multi-tache[texts].
+
+Code under MIT license.
