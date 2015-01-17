@@ -2,6 +2,7 @@
   "Julien Kirch": {
     "main_url": "https://twitter.com/archiloque",
     "fb_url": "https://www.facebook.com/archiloque",
-    "twitter_url": "@archiloque"
+    "twitter_handle": "@archiloque",
+    "default_author": true
   }
 }

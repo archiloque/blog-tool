@@ -4,6 +4,7 @@
     <title>[archiloque.net] Le blog</title>
     <meta name="viewport" content="width=850">
     <meta charset="utf-8">
+    <meta name="robots" CONTENT="all">
     <link type="text/css" rel="stylesheet" href="blog.css">
 
     <meta property="og:type" content="article"/>
@@ -14,11 +15,12 @@
     <meta property="og:title" content="Le blog"/>
     <meta property="twitter:title" content="Le blog"/>
 
+    <meta name="description" content="Le blog d'archiloque.net"/>
     <meta property="og:description" content="Le blog d'archiloque.net"/>
     <meta property="twitter:description" content="Le blog d'archiloque.net"/>
 
-    <meta property="twitter:site" content="@archiloque"/>
-    <meta property="article:author" content="https://www.facebook.com/archiloque"/>
+    <meta property="twitter:site" content="<%= author.twitter_handle %>"/>
+    <meta property="article:author" content="<%= author.fb_url %>"/>
 
     <meta property="og:locale" content="fr_FR"/>
     <meta property="og:url" content="<%= blog_root_url %>"/>
@@ -32,7 +34,7 @@
 <div id="content">
     <% articles.each do |article| %>
         <h4 class="blogHomePageArticleTitle"><%= "<a href=\"#{article.dir_name}/\">#{article.title}</a>" %></h4>
-        <div class="blogHomePageArticleSubtitle">par <%= article.author %> le <%= article.date %>
+        <div class="blogHomePageArticleSubtitle">par <%= article.author %> le <%= article.formatted_date %>
         <div class="blogHomePageArticleDescription"><%= article.description %>
     </div>
     <% end %>
