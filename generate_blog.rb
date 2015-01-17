@@ -8,6 +8,8 @@ require 'asciidoctor'
 require 'erb'
 require 'tilt'
 require 'json'
+require 'rss'
+
 unless BLOG_ROOT_URL.end_with? '/'
   raise "BLOG_ROOT_URL should end with a '/'"
 end
@@ -44,13 +46,15 @@ class Article
 
   MONTHS = ['janvier', 'février', 'mars', 'avril', 'mai', 'juin', 'juillet', 'août', 'septembre', 'octobre', 'novembre', 'décembre']
 
-  attr_reader :dir_name, :document, :source_dir, :date
+  attr_reader :dir_name, :document, :source_dir, :date, :last_modified_time
 
-  def initialize(dir_name, document, source_dir)
+  def initialize(dir_name, document, source_dir, last_modified_time)
     @dir_name = dir_name
     @document = document
     @source_dir =source_dir
     @date = Date.parse(document.revdate)
+    @last_modified_time = last_modified_time
+    @content = document.render
   end
 
   def title
@@ -70,11 +74,11 @@ class Article
   end
 
   def content
-    document.render
+    @content
   end
 
   def ignore_files
-    (document.attributes['ignore_files'] || '').split(',').collect{|i| i.strip}
+    (document.attributes['ignore_files'] || '').split(',').collect { |i| i.strip }
   end
 
   def formatted_date
@@ -103,17 +107,13 @@ Dir.glob(File.join(BLOG_SOURCE_PATH, '*')).each do |article_dir|
     ARTICLES << Article.new(
         File.basename(article_dir),
         article_document,
-        article_dir
+        article_dir,
+        File.mtime(article_file)
     )
   end
 end
 
-def copy_if_different(source, target)
-  unless File.exist?(target) && (File.mtime(source) == File.mtime(target))
-    p "Copy [#{source}] to [#{target}]"
-    FileUtils.copy_entry source, target, true
-  end
-end
+ARTICLES.sort_by { |article| article.date }.reverse
 
 # Render main page
 main_template = Tilt::ERBTemplate.new('templates/main.erb.html', :default_encoding => 'UTF-8')
@@ -124,12 +124,63 @@ File.open(main_target_file, 'w') do |file|
       main_template.render(
           Object.new,
           {
-              :articles => ARTICLES.sort_by!{|article| article.date}.reverse,
+              :articles => ARTICLES,
               :blog_root_url => BLOG_ROOT_URL,
               :author => DEFAULT_AUTHOR
           }))
 end
 
+# Render atom
+atom_target_file = File.join(BLOG_TARGET_PATH, 'atom.xml')
+p "Rendering [#{atom_target_file}]"
+rss = RSS::Maker.make('atom') do |maker|
+  channel = maker.channel
+
+  channel.id = "#{BLOG_ROOT_URL}"
+  channel.author = DEFAULT_AUTHOR.name
+  channel.updated = Time.now.xmlschema
+  channel.links.new_link do |link|
+    link.href = BLOG_ROOT_URL
+  end
+  channel.links.new_link do |link|
+    link.href= "#{BLOG_ROOT_URL}atom.xml"
+    link.rel = 'self'
+  end
+  channel.title = "Le blog d'archiloque.net"
+  channel.description = "Le blog d'archiloque.net"
+  channel.language = 'fr'
+
+  ARTICLES.each do |article|
+    article_author = AUTHORS[article.author]
+
+    maker.items.new_item do |item|
+      item.link = "#{BLOG_ROOT_URL}#{article.dir_name}/"
+      item.updated = article.last_modified_time.xmlschema
+      item.published = article.date.xmlschema
+
+      item.title = article.title
+      item.authors.new_author do |author|
+        author.name = article_author.name
+        author.uri = article_author.main_url
+      end
+      item.summary = article.description
+
+      item.content.type = 'html'
+      item.content.content = article.content
+    end
+  end
+end
+
+File.open(atom_target_file, 'w') do |file|
+  file.puts(rss)
+end
+
+def copy_if_different(source, target)
+  unless File.exist?(target) && (File.mtime(source) == File.mtime(target))
+    p "Copy [#{source}] to [#{target}]"
+    FileUtils.copy_entry source, target, true
+  end
+end
 
 article_template = Tilt::ERBTemplate.new('templates/article.erb.html', :default_encoding => 'UTF-8')
 
