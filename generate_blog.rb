@@ -44,7 +44,7 @@ ARTICLES = []
 
 class Article
 
-  MONTHS = ['janvier', 'février', 'mars', 'avril', 'mai', 'juin', 'juillet', 'août', 'septembre', 'octobre', 'novembre', 'décembre']
+  MONTHS = [nil, 'janvier', 'février', 'mars', 'avril', 'mai', 'juin', 'juillet', 'août', 'septembre', 'octobre', 'novembre', 'décembre']
 
   attr_reader :dir_name, :document, :source_dir, :date, :last_modified_time
 
