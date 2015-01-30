@@ -98,3 +98,18 @@ nav a:hover {
     padding-top: 20px;
     margin-bottom: 0;
 }
+
+blockquote {
+    padding-left: 30px;
+    padding-bottom: 20px;
+    position: relative;
+}
+
+blockquote:before {
+    display: block;
+    content: "\201C";
+    font-size: 128px;
+    position: absolute;
+    left: -30px;
+    top: 20px;
+}
