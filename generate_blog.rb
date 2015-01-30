@@ -114,7 +114,7 @@ Dir.glob(File.join(BLOG_SOURCE_PATH, '*')).each do |article_dir|
   end
 end
 
-ARTICLES.sort_by { |article| article.date }.reverse
+ARTICLES.sort_by! { |article| article.date }.reverse!
 
 # Render main page
 main_template = Tilt::ERBTemplate.new('templates/main.erb.html', :default_encoding => 'UTF-8')
