@@ -189,7 +189,7 @@ ARTICLES.each do |article|
   article_target_dir = File.join(BLOG_TARGET_PATH, File.basename(article.dir_name))
 
   unless File.exist? article_target_dir
-    File.mkdir article_target_dir
+    Dir.mkdir article_target_dir
   end
 
   # Render article
