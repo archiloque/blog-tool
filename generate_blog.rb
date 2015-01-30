@@ -9,6 +9,7 @@ require 'erb'
 require 'tilt'
 require 'json'
 require 'rss'
+require 'nokogiri'
 
 unless BLOG_ROOT_URL.end_with? '/'
   raise "BLOG_ROOT_URL should end with a '/'"
@@ -204,6 +205,7 @@ ARTICLES.each do |article|
                 :article_root_url => BLOG_ROOT_URL + article.dir_name + '/',
                 :article_content => article.content,
                 :article_title => article.title,
+                :article_escaped_title => Nokogiri::HTML(article.title).text,
                 :author => article_author,
                 :article_date => article.formatted_date,
                 :article_description => article.description,

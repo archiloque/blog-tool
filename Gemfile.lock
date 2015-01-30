@@ -2,6 +2,7 @@ GEM
   remote: https://rubygems.org/
   specs:
     asciidoctor (1.5.2)
+    nokogiri (1.5.11)
     tilt (2.0.1)
 
 PLATFORMS
@@ -9,4 +10,5 @@ PLATFORMS
 
 DEPENDENCIES
   asciidoctor
+  nokogiri
   tilt

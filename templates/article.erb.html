@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="fr">
 <head>
-    <title>[archiloque.net] <%= article_title %></title>
+    <title>[archiloque.net] <%= article_escaped_title %></title>
     <meta name="viewport" content="width=850">
     <meta charset="utf-8">
     <meta name="robots" CONTENT="all">
@@ -15,8 +15,8 @@
 
     <meta property="og:site_name" content="archiloque.net"/>
 
-    <meta property="og:title" content="<%= article_title %>"/>
-    <meta property="twitter:title" content="<%= article_title %>"/>
+    <meta property="og:title" content="<%= article_escaped_title %>"/>
+    <meta property="twitter:title" content="<%= article_escaped_title %>"/>
 
     <% if article_description %>
     <meta name="description" content="<%= article_description %>"/>
