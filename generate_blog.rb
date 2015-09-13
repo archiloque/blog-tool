@@ -11,6 +11,23 @@ require 'json'
 require 'rss'
 require 'nokogiri'
 
+require 'asciidoctor/converter/html5'
+
+class Asciidoctor::Converter::Html5Converter
+
+  def preamble(node)
+    toc = if (node.attr? 'toc') && (node.attr? 'toc-placement', 'preamble')
+            %(\n<div id="toc" class="#{node.attr 'toc-class', 'toc'}">
+<div id="toctitle">#{node.attr 'toc-title'}</div>
+#{outline node.document}
+</div>)
+          end
+    %(#{toc}#{node.content})
+  end
+
+end
+
+
 unless BLOG_ROOT_URL.end_with? '/'
   raise "BLOG_ROOT_URL should end with a '/'"
 end
