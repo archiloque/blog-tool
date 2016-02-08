@@ -91,6 +91,10 @@ class Article
     document.attributes['article_image']
   end
 
+  def lang
+    document.attributes['lang'] || 'fr'
+  end
+
   def content
     @content
   end
@@ -226,7 +230,8 @@ ARTICLES.each do |article|
                 :author => article_author,
                 :article_date => article.formatted_date,
                 :article_description => article.description,
-                :article_image => article.image
+                :article_image => article.image,
+                :lang => article.lang,
             }))
   end
 
