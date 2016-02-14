@@ -5,6 +5,7 @@ BLOG_TARGET_PATH = ENV['BLOG_TARGET_PATH'] || '../blog-generated'
 BLOG_ROOT_URL = ENV['BLOG_ROOT_URL'] || 'http://archiloque.net/blog/'
 
 BLOG_ARTICLE_BASE_NAME = 'README.asciidoc'
+BLOG_ARTICLE_TARGET_NAME = 'index.html'
 
 require 'asciidoctor'
 require 'erb'
@@ -149,7 +150,7 @@ ARTICLES.sort_by! { |article| article.date }.reverse!
 
 # Render main page
 main_template = Tilt::ERBTemplate.new('templates/main.erb.html', :default_encoding => 'UTF-8')
-main_target_file = File.join(BLOG_TARGET_PATH, 'index.html')
+main_target_file = File.join(BLOG_TARGET_PATH, BLOG_ARTICLE_TARGET_NAME)
 p "Rendering [#{main_target_file}]"
 File.open(main_target_file, 'w') do |file|
   file.puts(
@@ -224,7 +225,7 @@ ARTICLES.each do |article|
   end
 
   # Render article
-  target_file = File.join(article_target_dir, 'index.html')
+  target_file = File.join(article_target_dir, BLOG_ARTICLE_TARGET_NAME)
   p "Rendering [#{target_file}]"
   article_author = AUTHORS[article.author]
   File.open(target_file, 'w') do |file|
@@ -247,8 +248,8 @@ ARTICLES.each do |article|
 
   # Copy other files
   existing_files = Dir.glob(File.join(article_target_dir, '*')).collect { |f| File.basename(f) }
-  existing_files -= ['index.html', 'README.html']
-  ignore_files = article.ignore_files + [BLOG_ARTICLE_BASE_NAME]
+  existing_files -= [BLOG_ARTICLE_TARGET_NAME]
+  ignore_files = article.ignore_files + [BLOG_ARTICLE_BASE_NAME, 'README.html', 'README.asciidoc']
   Dir.glob(File.join(article.source_dir, '*')).each do |attached_file_source|
     attached_file_base_name = File.basename(attached_file_source)
     unless ignore_files.include? attached_file_base_name
