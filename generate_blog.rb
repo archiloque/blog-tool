@@ -1,3 +1,5 @@
+#!/usr/bin/env ruby
+
 BLOG_SOURCE_PATH = ENV['BLOG_ROOT_PATH'] || '../blog/publies'
 BLOG_TARGET_PATH = ENV['BLOG_TARGET_PATH'] || '../blog-generated'
 BLOG_ROOT_URL = ENV['BLOG_ROOT_URL'] || 'http://archiloque.net/blog/'
@@ -10,7 +12,7 @@ require 'tilt'
 require 'json'
 require 'rss'
 require 'nokogiri'
-
+require 'pygments'
 require 'asciidoctor/converter/html5'
 
 class Asciidoctor::Converter::Html5Converter
@@ -69,7 +71,7 @@ class Article
   def initialize(dir_name, document, source_dir, last_modified_time)
     @dir_name = dir_name
     @document = document
-    @source_dir =source_dir
+    @source_dir = source_dir
     @date = Date.parse(document.revdate)
     @last_modified_time = last_modified_time
     @content = document.render
@@ -125,12 +127,20 @@ Dir.glob(File.join(BLOG_SOURCE_PATH, '*')).each do |article_dir|
       raise "[#{article_file}] does not exist"
     end
     p "Processing [#{article_file}]"
-    article_document = Asciidoctor.load(File.readlines(article_file))
+    article_document = Asciidoctor.load(
+      File.readlines(article_file),
+      {
+        :base_dir => article_dir,
+        :safe => Asciidoctor::SafeMode::UNSAFE,
+        :attributes => {
+          'source-highlighter' => 'pygments'
+        }
+      })
     ARTICLES << Article.new(
-        File.basename(article_dir),
-        article_document,
-        article_dir,
-        File.mtime(article_file)
+      File.basename(article_dir),
+      article_document,
+      article_dir,
+      File.mtime(article_file)
     )
   end
 end
@@ -143,13 +153,13 @@ main_target_file = File.join(BLOG_TARGET_PATH, 'index.html')
 p "Rendering [#{main_target_file}]"
 File.open(main_target_file, 'w') do |file|
   file.puts(
-      main_template.render(
-          Object.new,
-          {
-              :articles => ARTICLES,
-              :blog_root_url => BLOG_ROOT_URL,
-              :author => DEFAULT_AUTHOR
-          }))
+    main_template.render(
+      Object.new,
+      {
+        :articles => ARTICLES,
+        :blog_root_url => BLOG_ROOT_URL,
+        :author => DEFAULT_AUTHOR
+      }))
 end
 
 # Render atom
@@ -219,25 +229,25 @@ ARTICLES.each do |article|
   article_author = AUTHORS[article.author]
   File.open(target_file, 'w') do |file|
     file.puts(
-        article_template.render(
-            Object.new,
-            {
-                :blog_root_url => BLOG_ROOT_URL,
-                :article_root_url => BLOG_ROOT_URL + article.dir_name + '/',
-                :article_content => article.content,
-                :article_title => article.title,
-                :article_escaped_title => Nokogiri::HTML(article.title).text,
-                :author => article_author,
-                :article_date => article.formatted_date,
-                :article_description => article.description,
-                :article_image => article.image,
-                :lang => article.lang,
-            }))
+      article_template.render(
+        Object.new,
+        {
+          :blog_root_url => BLOG_ROOT_URL,
+          :article_root_url => BLOG_ROOT_URL + article.dir_name + '/',
+          :article_content => article.content,
+          :article_title => article.title,
+          :article_escaped_title => Nokogiri::HTML(article.title).text,
+          :author => article_author,
+          :article_date => article.formatted_date,
+          :article_description => article.description,
+          :article_image => article.image,
+          :lang => article.lang,
+        }))
   end
 
   # Copy other files
   existing_files = Dir.glob(File.join(article_target_dir, '*')).collect { |f| File.basename(f) }
-  existing_files -= ['index.html']
+  existing_files -= ['index.html', 'README.html']
   ignore_files = article.ignore_files + [BLOG_ARTICLE_BASE_NAME]
   Dir.glob(File.join(article.source_dir, '*')).each do |attached_file_source|
     attached_file_base_name = File.basename(attached_file_source)
@@ -257,7 +267,20 @@ ARTICLES.each do |article|
 
 end
 
+BLOG_CSS_FILE = 'blog.css'
+
 p 'Static files'
 Dir.glob(File.join('static', '*')).each do |file|
-  copy_if_different(file, File.join(BLOG_TARGET_PATH, File.basename(file)))
+  file_basename = File.basename(file)
+  unless [BLOG_CSS_FILE].include? file_basename
+    copy_if_different(file, File.join(BLOG_TARGET_PATH, file_basename))
+  end
+end
+
+p 'Blog.css'
+
+blog_css_content = IO.read(File.join('static', BLOG_CSS_FILE))
+pygment_stylesheet_content = Asciidoctor::Stylesheets.instance.pygments_stylesheet_data('fruity')
+File.open(File.join(BLOG_TARGET_PATH, BLOG_CSS_FILE), 'w') do |file|
+  file << "#{blog_css_content}\n/* Pygments */\n#{pygment_stylesheet_content}"
 end
