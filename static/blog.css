@@ -20,7 +20,8 @@ a:hover {
 
 pre {
     font-family: "Lucida Console", Consolas, Monaco, monospace;
-    font-size: 16px;
+    font-size: 14px;
+    line-height: 16px;
 }
 
 #articleTitle {
