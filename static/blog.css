@@ -1,8 +1,8 @@
 body {
     background-color: #4575d2;
     color: white;
-    font-family: "Gill Sans", "Gill Sans MT", Calibri, sans-serif;
-    font-size: 22px;
+    font-family: "Futura", Calibri, sans-serif;
+    font-size: 20px;
     line-height: 30px;
 }
 
@@ -122,4 +122,8 @@ p {
 
 #content {
     width: 800px;
+}
+
+.title {
+  padding-bottom: 10px;
 }
