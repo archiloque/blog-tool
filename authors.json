@@ -4,5 +4,9 @@
     "fb_url": "https://www.facebook.com/archiloque",
     "twitter_handle": "@archiloque",
     "default_author": true
+  },
+  "Cédric Lunven": {
+    "main_url": "http://ff4j.org",
+    "twitter_handle": "@clunven"
   }
 }

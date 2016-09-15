@@ -36,7 +36,7 @@
 <div id="content">
     <% articles.each do |article| %>
         <h4 class="blogHomePageArticleTitle"><%= "<a href=\"#{article.dir_name}/\">#{article.title}</a>" %></h4>
-        <div class="blogHomePageArticleSubtitle">par <%= article.author %> le <%= article.formatted_date %>
+        <div class="blogHomePageArticleSubtitle">par <%= article.authors %> le <%= article.formatted_date %>
         <div class="blogHomePageArticleDescription"><%= article.description %>
     </div>
     <% end %>

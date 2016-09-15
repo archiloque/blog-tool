@@ -9,7 +9,7 @@
     <link rel="alternate" type="application/atom+xml" title="Le blog d'archiloque.net" href="<%= blog_root_url %>atom.xml" />
     <link rel="shortcut icon" href="/favicon.ico" />
 
-    <meta name="author" content="<%= author.name %>">
+    <meta name="author" content="<%= authors.collect{|a| a.name}.join(', ') %>">
     <meta property="og:type" content="article"/>
     <meta name="twitter:card" content="summary" />
 
@@ -24,12 +24,12 @@
     <meta property="twitter:description" content="<%= article_description %>"/>
     <% end %>
 
-    <% if author.fb_url %>
-    <meta property="article:author" content="<%= author.fb_url %>"/>
+    <% if authors.first.fb_url %>
+    <meta property="article:author" content="<%= authors.first.fb_url %>"/>
     <% end %>
 
-    <% if author.twitter_handle %>
-    <meta property="twitter:site" content="<%= author.twitter_handle %>"/>
+    <% if authors.first.twitter_handle %>
+    <meta property="twitter:site" content="<%= authors.first.twitter_handle %>"/>
     <% end %>
 
     <meta property="og:locale" content="fr_FR"/>
@@ -48,7 +48,7 @@
 <h1 id="articleTitle"><%= article_title %></h1>
 <div id="content">
     <article>
-    <div id="subtitle">par <%= author.main_url ? "<a href=\"#{author.main_url}\">#{author.name}</a>" : author.name %> le <%=
+    <div id="subtitle">par <%= authors.collect{|author| author.main_url ? "<a href=\"#{author.main_url}\">#{author.name}</a>" : author.name }.join(', ') %> le <%=
         article_date %>
     </div>
     <%= article_content %>

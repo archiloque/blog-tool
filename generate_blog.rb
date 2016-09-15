@@ -61,6 +61,17 @@ JSON.parse(File.read('authors.json')).collect do |name, value|
   AUTHORS[name] = author
 end
 
+def authors_details_from_names(authors)
+  authors.split(',').map do |a|
+    a.strip!
+    if AUTHORS.key? a
+      AUTHORS[a]
+    else
+      raise "Unknown author [#{a}]"
+    end
+  end
+end
+
 ARTICLES = []
 
 class Article
@@ -86,8 +97,8 @@ class Article
     document.attributes['article_description']
   end
 
-  def author
-    document.author
+  def authors
+    document.attributes['authors']
   end
 
   def image
@@ -184,7 +195,7 @@ rss = RSS::Maker.make('atom') do |maker|
   channel.language = 'fr'
 
   ARTICLES.each do |article|
-    article_author = AUTHORS[article.author]
+    article_authors = authors_details_from_names(article.authors)
 
     maker.items.new_item do |item|
       item.link = "#{BLOG_ROOT_URL}#{article.dir_name}/"
@@ -192,9 +203,11 @@ rss = RSS::Maker.make('atom') do |maker|
       item.published = article.date.xmlschema
 
       item.title = article.title
-      item.authors.new_author do |author|
-        author.name = article_author.name
-        author.uri = article_author.main_url
+      article_authors.each do |article_author|
+        item.authors.new_author do |author|
+          author.name = article_author.name
+          author.uri = article_author.main_url
+        end
       end
       item.summary = article.description
 
@@ -227,7 +240,7 @@ ARTICLES.each do |article|
   # Render article
   target_file = File.join(article_target_dir, BLOG_ARTICLE_TARGET_NAME)
   p "Rendering [#{target_file}]"
-  article_author = AUTHORS[article.author]
+  article_authors = authors_details_from_names(article.authors)
   File.open(target_file, 'w') do |file|
     file.puts(
       article_template.render(
@@ -238,7 +251,7 @@ ARTICLES.each do |article|
           :article_content => article.content,
           :article_title => article.title,
           :article_escaped_title => Nokogiri::HTML(article.title).text,
-          :author => article_author,
+          :authors => article_authors,
           :article_date => article.formatted_date,
           :article_description => article.description,
           :article_image => article.image,
