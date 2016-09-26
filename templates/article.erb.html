@@ -2,14 +2,14 @@
 <html lang="<%= lang %>">
 <head>
     <meta charset="utf-8">
-    <title>[archiloque.net] <%= article_escaped_title %></title>
+    <title>[archiloque.net] <%= Nokogiri::HTML(article.title).text %></title>
     <meta name="viewport" content="width=850">
     <meta name="robots" CONTENT="all">
     <link type="text/css" rel="stylesheet" href="../blog.css">
     <link rel="alternate" type="application/atom+xml" title="Le blog d'archiloque.net" href="<%= blog_root_url %>atom.xml" />
     <link rel="shortcut icon" href="/favicon.ico" />
-    <link rel="canonical" href="<%= "#{article_root_url}#{article_dir_name}" %>" />
-    <link rel="amphtml" href="<%= "#{article_root_url}#{article_dir_name}/index.amp.html" %>">
+    <link rel="canonical" href="<%= article.absolute_url %>" />
+    <link rel="amphtml" href="<%= article.absolute_url %>index.amp.html">
 
     <meta name="author" content="<%= authors.collect{|a| a.name}.join(', ') %>">
     <meta property="og:type" content="article"/>
@@ -17,13 +17,13 @@
 
     <meta property="og:site_name" content="archiloque.net"/>
 
-    <meta property="og:title" content="<%= article_escaped_title %>"/>
-    <meta property="twitter:title" content="<%= article_escaped_title %>"/>
+    <meta property="og:title" content="<%= Nokogiri::HTML(article.title).text %>"/>
+    <meta property="twitter:title" content="<%= Nokogiri::HTML(article.title).text %>"/>
 
-    <% if article_description %>
-    <meta name="description" content="<%= article_description %>"/>
-    <meta property="og:description" content="<%= article_description %>"/>
-    <meta property="twitter:description" content="<%= article_description %>"/>
+    <% if article.description %>
+    <meta name="description" content="<%= article.description %>"/>
+    <meta property="og:description" content="<%= article.description %>"/>
+    <meta property="twitter:description" content="<%= article.description %>"/>
     <% end %>
 
     <% if authors.first.fb_url %>
@@ -35,19 +35,19 @@
     <% end %>
 
     <meta property="og:locale" content="fr_FR"/>
-    <meta property="og:url" content="<%= article_root_url %>"/>
+    <meta property="og:url" content="<%= article.absolute_url %>"/>
 
-    <% if article_image %>
-    <meta property="og:image" content="<%= "#{article_root_url}#{article_image}" %>" />
-    <meta property="twitter:image" content="<%= "#{article_root_url}#{article_image}" %>" />
+    <% if article.image %>
+    <meta property="og:image" content="<%= "#{article.absolute_url}#{article.image}" %>" />
+    <meta property="twitter:image" content="<%= "#{article.absolute_url}#{article.image}" %>" />
     <% end %>
 
 </head>
 <body>
-<nav>
+<nav id="navTop">
     <a href="<%= blog_root_url%>">Le blog d'archiloque.net</a>
 </nav>
-<h1 id="articleTitle"><%= article_title %></h1>
+<h1 id="articleTitle"><%= article.title %></h1>
 <div id="content">
     <article>
     <div id="subtitle"><%= (lang == 'en') ? 'by' : 'par' %> <%= authors.collect{|author| author.main_url ? "<a href=\"#{author.main_url}\">#{author.name}</a>" : author.name }.join(', ') %>, <%=
@@ -55,6 +55,15 @@
     </div>
     <%= article_content %>
     </article>
+    <nav id="navBottom">
+        <% if previous_article %>
+            <a id="previousArticle" href="<%= previous_article.absolute_url %>">← <%= previous_article.title %></a>
+        <% end %>
+        <% if next_article %>
+            <a id="nextArticle" href="<%= next_article.absolute_url %>"><%= next_article.title %> →</a>
+        <% end %>
+    </nav>
 </div>
+
 </body>
 </html>

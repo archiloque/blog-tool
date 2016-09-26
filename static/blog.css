@@ -10,7 +10,7 @@ h1, h2, h3, h4, h5 {
   line-height: 120%;
 }
 
-nav {
+#navTop {
     text-align: right;
 }
 a {
@@ -127,4 +127,17 @@ p {
 
 .title {
   padding-bottom: 10px;
+}
+
+#navBottom {
+    padding-top: 20px;
+}
+
+#previousArticle, #nextArticle {
+    display: block;
+    width: 100%;
+}
+
+#nextArticle {
+    text-align: right;
 }

@@ -19,6 +19,7 @@ require 'nokogiri'
 require 'pygments'
 require 'asciidoctor/converter/html5'
 require 'fastimage'
+
 class Asciidoctor::Converter::Html5Converter
 
   def preamble(node)
@@ -55,7 +56,6 @@ class Author
     @name = name
   end
 end
-
 
 AUTHORS = {}
 JSON.parse(File.read('authors.json')).collect do |name, value|
@@ -130,12 +130,18 @@ class Article
 
   def image_size
     if image
-      image_path = fetch_image_size(image)
+      fetch_image_size(image)
+    else
+      nil
     end
   end
 
   def lang
     document.attributes['article_lang'] || 'fr'
+  end
+
+  def absolute_url
+    BLOG_ROOT_URL + dir_name + '/'
   end
 
   def content
@@ -206,7 +212,7 @@ ARTICLES.sort_by! { |article| article.date }.reverse!
 # Render main page
 main_template = Tilt::ERBTemplate.new('templates/main.erb.html', :default_encoding => 'UTF-8')
 main_target_file = File.join(BLOG_TARGET_PATH, BLOG_ARTICLE_TARGET_NAME)
-p "Rendering [#{main_target_file}]"
+p "Rendering main [#{main_target_file}]"
 File.open(main_target_file, 'w') do |file|
   file.puts(
     main_template.render(
@@ -221,7 +227,7 @@ end
 
 # Render atom
 atom_target_file = File.join(BLOG_TARGET_PATH, 'atom.xml')
-p "Rendering [#{atom_target_file}]"
+p "Rendering atom [#{atom_target_file}]"
 rss = RSS::Maker.make('atom') do |maker|
   channel = maker.channel
 
@@ -266,6 +272,10 @@ File.open(atom_target_file, 'w') do |file|
   file.puts(rss)
 end
 
+##
+# Copy a file if the timestamp is different
+# @param source {String}
+# @param target {String}
 def copy_if_different(source, target)
   unless File.exist?(target) && (File.mtime(source) == File.mtime(target))
     p "Copy [#{source}] to [#{target}]"
@@ -276,54 +286,61 @@ end
 article_template = Tilt::ERBTemplate.new('templates/article.erb.html', :default_encoding => 'UTF-8')
 article_amp_template = Tilt::ERBTemplate.new('templates/article.amp.erb.html', :default_encoding => 'UTF-8')
 
+##
+# Render a content
+# @param target_file {String} the target file
+# @param template {Tilt::ERBTemplate} the template to use
+# @param parameters {Hash} parameters for the templates
 def render_content(target_file, template, parameters)
+  p "Rendering [#{target_file}]"
   File.open(target_file, 'w') do |file|
     file.puts(
       template.render(Object.new, parameters))
   end
-
 end
 
-ARTICLES.each do |article|
+ARTICLES.each_with_index do |article, article_index|
   article_authors = authors_details_from_names(article.authors)
   article_parameters = {
+    :article => article,
     :blog_root_url => BLOG_ROOT_URL,
-    :article_root_url => BLOG_ROOT_URL + article.dir_name + '/',
-    :article_title => article.title,
-    :article_escaped_title => Nokogiri::HTML(article.title).text,
-    :article_dir_name => article.dir_name,
     :authors => article_authors,
     :article_date => article.formatted_date,
-    :article_published => article.date.xmlschema,
-    :article_updated => article.last_modified_time.xmlschema,
-    :article_description => article.description,
-    :article_image => article.image,
-    :article_image_size => article.image_size,
+    :article_published => article.date,
+    :article_updated => article.last_modified_time,
     :lang => article.lang,
     :site_logo_url => SITE_LOGO_URL,
     :site_logo_size => SITE_LOGO_SIZE,
     :default_author => DEFAULT_AUTHOR,
+    :next_article => (article_index != 0) ? ARTICLES[article_index - 1] : nil,
+    :previous_article => (article_index != (ARTICLES.length() -1)) ? ARTICLES[article_index + 1] : nil,
   }
 
-  file_basename = File.basename(article.dir_name)
-  article_target_dir = File.join(BLOG_TARGET_PATH, file_basename)
+  article_target_dir = File.join(BLOG_TARGET_PATH, article.dir_name)
+
+  # Create parent dir
   unless File.exist? article_target_dir
     Dir.mkdir article_target_dir
   end
 
   # Render article
   article_target_file = File.join(article_target_dir, BLOG_ARTICLE_TARGET_NAME)
-  p "Rendering [#{article_target_file}]"
-  render_content(article_target_file, article_template, article_parameters.merge({:article_content => article.content}))
+  render_content(
+    article_target_file,
+    article_template,
+    article_parameters.merge({:article_content => article.content}))
+
   # Render amp article
   article_amp_target_file = File.join(article_target_dir, BLOG_ARTICLE_AMP_TARGET_NAME)
-  p "Rendering [#{article_amp_target_file}]"
-  render_content(article_amp_target_file, article_amp_template, article_parameters.merge({:amp_content => article.amp_content}))
+  render_content(
+    article_amp_target_file,
+    article_amp_template,
+    article_parameters.merge({:amp_content => article.amp_content}))
 
   # Copy other files
   existing_files = Dir.glob(File.join(article_target_dir, '*')).collect { |f| File.basename(f) }
   existing_files -= [BLOG_ARTICLE_TARGET_NAME, BLOG_ARTICLE_AMP_TARGET_NAME]
-  ignore_files = article.ignore_files + [BLOG_ARTICLE_BASE_NAME, 'README.html', 'README.asciidoc']
+  ignore_files = article.ignore_files + [BLOG_ARTICLE_BASE_NAME, 'README.html']
   Dir.glob(File.join(article.source_dir, '*')).each do |attached_file_source|
     attached_file_base_name = File.basename(attached_file_source)
     unless ignore_files.include? attached_file_base_name
