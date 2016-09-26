@@ -1,13 +1,15 @@
 <!DOCTYPE html>
 <html lang="<%= lang %>">
 <head>
+    <meta charset="utf-8">
     <title>[archiloque.net] <%= article_escaped_title %></title>
     <meta name="viewport" content="width=850">
-    <meta charset="utf-8">
     <meta name="robots" CONTENT="all">
     <link type="text/css" rel="stylesheet" href="../blog.css">
     <link rel="alternate" type="application/atom+xml" title="Le blog d'archiloque.net" href="<%= blog_root_url %>atom.xml" />
     <link rel="shortcut icon" href="/favicon.ico" />
+    <link rel="canonical" href="<%= "#{article_root_url}#{article_dir_name}" %>" />
+    <link rel="amphtml" href="<%= "#{article_root_url}#{article_dir_name}/index.amp.html" %>">
 
     <meta name="author" content="<%= authors.collect{|a| a.name}.join(', ') %>">
     <meta property="og:type" content="article"/>
@@ -48,7 +50,7 @@
 <h1 id="articleTitle"><%= article_title %></h1>
 <div id="content">
     <article>
-    <div id="subtitle">par <%= authors.collect{|author| author.main_url ? "<a href=\"#{author.main_url}\">#{author.name}</a>" : author.name }.join(', ') %> le <%=
+    <div id="subtitle"><%= (lang == 'en') ? 'by' : 'par' %> <%= authors.collect{|author| author.main_url ? "<a href=\"#{author.main_url}\">#{author.name}</a>" : author.name }.join(', ') %>, <%=
         article_date %>
     </div>
     <%= article_content %>

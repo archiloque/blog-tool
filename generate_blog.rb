@@ -3,9 +3,12 @@
 BLOG_SOURCE_PATH = ENV['BLOG_ROOT_PATH'] || '../blog/publies'
 BLOG_TARGET_PATH = ENV['BLOG_TARGET_PATH'] || '../blog-generated'
 BLOG_ROOT_URL = ENV['BLOG_ROOT_URL'] || 'http://archiloque.net/blog/'
+LOGO_FILE = 'logo.png'
 
 BLOG_ARTICLE_BASE_NAME = 'README.asciidoc'
 BLOG_ARTICLE_TARGET_NAME = 'index.html'
+BLOG_ARTICLE_AMP_TARGET_NAME = 'index.amp.html'
+
 
 require 'asciidoctor'
 require 'erb'
@@ -15,7 +18,7 @@ require 'rss'
 require 'nokogiri'
 require 'pygments'
 require 'asciidoctor/converter/html5'
-
+require 'fastimage'
 class Asciidoctor::Converter::Html5Converter
 
   def preamble(node)
@@ -30,10 +33,12 @@ class Asciidoctor::Converter::Html5Converter
 
 end
 
-
 unless BLOG_ROOT_URL.end_with? '/'
   raise "BLOG_ROOT_URL should end with a '/'"
 end
+
+SITE_LOGO_URL = "#{BLOG_ROOT_URL}#{LOGO_FILE}"
+SITE_LOGO_SIZE = FastImage.size("static//#{LOGO_FILE}", :raise_on_failure => true)
 
 unless Dir.exist? BLOG_TARGET_PATH
   Dir.mkdir BLOG_TARGET_PATH
@@ -86,7 +91,25 @@ class Article
     @source_dir = source_dir
     @date = Date.parse(document.revdate)
     @last_modified_time = last_modified_time
-    @content = document.render
+    @raw_content = document.render
+    @parsed_content = Nokogiri::HTML::fragment(@raw_content)
+    add_images_size
+    create_amp_content
+  end
+
+  def add_images_size
+    @parsed_content.css('img').each do |img|
+      img_size = fetch_image_size(img['src'])
+      img['width'] = "#{img_size[0]}px"
+      img['height'] = "#{img_size[1]}px"
+    end
+  end
+
+  def create_amp_content
+    @amp_content = @parsed_content.dup
+    @amp_content.css('img').each do |img|
+      img.name = 'amp-img'
+    end
   end
 
   def title
@@ -105,12 +128,22 @@ class Article
     document.attributes['article_image']
   end
 
+  def image_size
+    if image
+      image_path = fetch_image_size(image)
+    end
+  end
+
   def lang
-    document.attributes['lang'] || 'fr'
+    document.attributes['article_lang'] || 'fr'
   end
 
   def content
-    @content
+    @parsed_content.to_s
+  end
+
+  def amp_content
+    @amp_content.to_s
   end
 
   def ignore_files
@@ -118,7 +151,18 @@ class Article
   end
 
   def formatted_date
-    "#{date.day} #{MONTHS[date.month]} #{date.year}"
+    if lang == 'fr'
+      "le #{date.day} #{MONTHS[date.month]} #{date.year}"
+    else
+      date.strftime '%B %e, %Y'
+    end
+  end
+
+  private
+
+  def fetch_image_size(image_path)
+    image_full_path = File.join(source_dir, image_path)
+    FastImage.size(image_full_path, :raise_on_failure => true)
   end
 
 end
@@ -170,7 +214,8 @@ File.open(main_target_file, 'w') do |file|
       {
         :articles => ARTICLES,
         :blog_root_url => BLOG_ROOT_URL,
-        :author => DEFAULT_AUTHOR
+        :author => DEFAULT_AUTHOR,
+        :site_logo_url => SITE_LOGO_URL,
       }))
 end
 
@@ -229,39 +274,55 @@ def copy_if_different(source, target)
 end
 
 article_template = Tilt::ERBTemplate.new('templates/article.erb.html', :default_encoding => 'UTF-8')
+article_amp_template = Tilt::ERBTemplate.new('templates/article.amp.erb.html', :default_encoding => 'UTF-8')
+
+def render_content(target_file, template, parameters)
+  File.open(target_file, 'w') do |file|
+    file.puts(
+      template.render(Object.new, parameters))
+  end
+
+end
 
 ARTICLES.each do |article|
-  article_target_dir = File.join(BLOG_TARGET_PATH, File.basename(article.dir_name))
+  article_authors = authors_details_from_names(article.authors)
+  article_parameters = {
+    :blog_root_url => BLOG_ROOT_URL,
+    :article_root_url => BLOG_ROOT_URL + article.dir_name + '/',
+    :article_title => article.title,
+    :article_escaped_title => Nokogiri::HTML(article.title).text,
+    :article_dir_name => article.dir_name,
+    :authors => article_authors,
+    :article_date => article.formatted_date,
+    :article_published => article.date.xmlschema,
+    :article_updated => article.last_modified_time.xmlschema,
+    :article_description => article.description,
+    :article_image => article.image,
+    :article_image_size => article.image_size,
+    :lang => article.lang,
+    :site_logo_url => SITE_LOGO_URL,
+    :site_logo_size => SITE_LOGO_SIZE,
+    :default_author => DEFAULT_AUTHOR,
+  }
 
+  file_basename = File.basename(article.dir_name)
+  article_target_dir = File.join(BLOG_TARGET_PATH, file_basename)
   unless File.exist? article_target_dir
     Dir.mkdir article_target_dir
   end
 
   # Render article
-  target_file = File.join(article_target_dir, BLOG_ARTICLE_TARGET_NAME)
-  p "Rendering [#{target_file}]"
-  article_authors = authors_details_from_names(article.authors)
-  File.open(target_file, 'w') do |file|
-    file.puts(
-      article_template.render(
-        Object.new,
-        {
-          :blog_root_url => BLOG_ROOT_URL,
-          :article_root_url => BLOG_ROOT_URL + article.dir_name + '/',
-          :article_content => article.content,
-          :article_title => article.title,
-          :article_escaped_title => Nokogiri::HTML(article.title).text,
-          :authors => article_authors,
-          :article_date => article.formatted_date,
-          :article_description => article.description,
-          :article_image => article.image,
-          :lang => article.lang,
-        }))
-  end
+  article_target_file = File.join(article_target_dir, BLOG_ARTICLE_TARGET_NAME)
+  p "Rendering [#{article_target_file}]"
+  render_content(article_target_file, article_template, article_parameters.merge({:article_content => article.content}))
+  # Render amp article
+  article_amp_target_file = File.join(article_target_dir, BLOG_ARTICLE_AMP_TARGET_NAME)
+  p "Rendering [#{article_amp_target_file}]"
+  render_content(article_amp_target_file, article_amp_template, article_parameters.merge({:amp_content => article.amp_content}))
 
   # Copy other files
   existing_files = Dir.glob(File.join(article_target_dir, '*')).collect { |f| File.basename(f) }
-  existing_files -= [BLOG_ARTICLE_TARGET_NAME]
+  existing_files -= [BLOG_ARTICLE_TARGET_NAME, BLOG_ARTICLE_AMP_TARGET_NAME]
   ignore_files = article.ignore_files + [BLOG_ARTICLE_BASE_NAME, 'README.html', 'README.asciidoc']
   Dir.glob(File.join(article.source_dir, '*')).each do |attached_file_source|
     attached_file_base_name = File.basename(attached_file_source)
@@ -292,7 +353,6 @@ Dir.glob(File.join('static', '*')).each do |file|
 end
 
 p 'Blog.css'
-
 blog_css_content = IO.read(File.join('static', BLOG_CSS_FILE))
 pygment_stylesheet_content = Asciidoctor::Stylesheets.instance.pygments_stylesheet_data('fruity')
 File.open(File.join(BLOG_TARGET_PATH, BLOG_CSS_FILE), 'w') do |file|
