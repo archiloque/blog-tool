@@ -42,6 +42,46 @@
     <meta property="twitter:image" content="<%= "#{article.absolute_url}#{article.image}" %>" />
     <% end %>
 
+    <script type="application/ld+json">
+      {
+        "@context": "http://schema.org",
+        "@type": "NewsArticle",
+        "mainEntityOfPage": "http://cdn.ampproject.org/article-metadata.html",
+        "headline": "[archiloque.net] <%= Nokogiri::HTML(article.title).text %>",
+        "datePublished": "<%= article_published.xmlschema %>",
+        "dateModified": "<%= article_updated.xmlschema %>",
+        <% if article.description %>
+        "description": "<%= article.description %>",
+        <% end %>
+        "author": {
+          "@type": "Person",
+          "name": "<%= authors.first.name %>"
+        },
+        "publisher": {
+          "@type": "Organization",
+          "name": "<%= default_author.name %>",
+          "logo": {
+            "@type": "ImageObject",
+            "url": "<%= amp_site_logo_url %>",
+            "width": <%= amp_site_logo_size[0] %>,
+            "height": <%= amp_site_logo_size[1] %>
+          }
+        },
+        "image": {
+          "@type": "ImageObject",
+        <% if article.image %>
+          "url": "<%= "#{article.absolute_url}#{article.image}" %>",
+          "height": <%= article.image_size[1] %>,
+          "width": <%= article.image_size[0] %>
+        <% else %>
+            "url": "<%= site_logo_url %>",
+            "width": <%= site_logo_size[0] %>,
+            "height": <%= site_logo_size[1] %>
+        <% end %>
+        }
+      }
+    </script>
+
 </head>
 <body>
 <nav id="navTop">

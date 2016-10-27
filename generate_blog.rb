@@ -4,10 +4,13 @@ BLOG_SOURCE_PATH = ENV['BLOG_ROOT_PATH'] || '../blog/publies'
 BLOG_TARGET_PATH = ENV['BLOG_TARGET_PATH'] || '../blog-generated'
 BLOG_ROOT_URL = ENV['BLOG_ROOT_URL'] || 'http://archiloque.net/blog/'
 LOGO_FILE = 'logo.png'
+AMP_LOGO_FILE = 'logo.amp.png'
 
 BLOG_ARTICLE_BASE_NAME = 'README.asciidoc'
 BLOG_ARTICLE_TARGET_NAME = 'index.html'
 BLOG_ARTICLE_AMP_TARGET_NAME = 'index.amp.html'
+SITEMAP_FILE = 'sitemap.xml'
+ATOM_FILE = 'atom.xml'
 
 
 require 'asciidoctor'
@@ -40,6 +43,8 @@ end
 
 SITE_LOGO_URL = "#{BLOG_ROOT_URL}#{LOGO_FILE}"
 SITE_LOGO_SIZE = FastImage.size("static//#{LOGO_FILE}", :raise_on_failure => true)
+AMP_SITE_LOGO_URL = "#{BLOG_ROOT_URL}#{AMP_LOGO_FILE}"
+AMP_SITE_LOGO_SIZE = FastImage.size("static//#{AMP_LOGO_FILE}", :raise_on_failure => true)
 
 unless Dir.exist? BLOG_TARGET_PATH
   Dir.mkdir BLOG_TARGET_PATH
@@ -110,6 +115,10 @@ class Article
     @amp_content.css('img').each do |img|
       img.name = 'amp-img'
     end
+    @amp_content.css('[style]').each do |element_with_style|
+      element_with_style.delete('style')
+    end
+
   end
 
   def title
@@ -222,11 +231,14 @@ File.open(main_target_file, 'w') do |file|
         :blog_root_url => BLOG_ROOT_URL,
         :author => DEFAULT_AUTHOR,
         :site_logo_url => SITE_LOGO_URL,
+        :amp_site_logo_url => AMP_SITE_LOGO_URL,
+        :site_logo_size => SITE_LOGO_SIZE,
+        :amp_site_logo_size => AMP_SITE_LOGO_SIZE,
       }))
 end
 
 # Render atom
-atom_target_file = File.join(BLOG_TARGET_PATH, 'atom.xml')
+atom_target_file = File.join(BLOG_TARGET_PATH, ATOM_FILE)
 p "Rendering atom [#{atom_target_file}]"
 rss = RSS::Maker.make('atom') do |maker|
   channel = maker.channel
@@ -272,6 +284,23 @@ File.open(atom_target_file, 'w') do |file|
   file.puts(rss)
 end
 
+# Render sitemap
+sitemap_target_file = File.join(BLOG_TARGET_PATH, SITEMAP_FILE)
+p "Rendering sitemap [#{sitemap_target_file}]"
+sitemap_builder = Nokogiri::XML::Builder.new(:encoding => 'UTF-8') do |xml|
+  xml.urlset(xmlns: 'http://www.sitemaps.org/schemas/sitemap/0.9') do
+    ARTICLES.each do |article|
+      xml.url do
+        xml.loc "#{BLOG_ROOT_URL}#{article.dir_name}/"
+      end
+    end
+  end
+end
+
+File.open(sitemap_target_file, 'w') do |file|
+  file.puts(sitemap_builder.to_xml)
+end
+
 ##
 # Copy a file if the timestamp is different
 # @param source {String}
@@ -310,7 +339,9 @@ ARTICLES.each_with_index do |article, article_index|
     :article_updated => article.last_modified_time,
     :lang => article.lang,
     :site_logo_url => SITE_LOGO_URL,
+    :amp_site_logo_url => AMP_SITE_LOGO_URL,
     :site_logo_size => SITE_LOGO_SIZE,
+    :amp_site_logo_size => AMP_SITE_LOGO_SIZE,
     :default_author => DEFAULT_AUTHOR,
     :next_article => (article_index != 0) ? ARTICLES[article_index - 1] : nil,
     :previous_article => (article_index != (ARTICLES.length() -1)) ? ARTICLES[article_index + 1] : nil,

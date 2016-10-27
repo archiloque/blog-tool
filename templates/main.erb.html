@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="fr">
 <head>
@@ -29,15 +30,45 @@
     <meta property="og:image" content="<%= site_logo_url %>" />
     <meta property="twitter:image" content="<%= site_logo_url %>" />
     <meta property="og:type" content="article"/>
+
+    <script type="application/ld+json">
+      {
+        "@context": "http://schema.org",
+        "@type": "NewsArticle",
+        "mainEntityOfPage": "http://cdn.ampproject.org/article-metadata.html",
+        "headline": "[archiloque.net] Le blog",
+        "datePublished": "<%= articles.last.date.xmlschema %>",
+        "dateModified": "<%= articles.first.last_modified_time.xmlschema %>",
+        "author": {
+          "@type": "Person",
+          "name": "<%= author.name %>"
+        },
+        "publisher": {
+          "@type": "Organization",
+          "name": "<%= author.name %>",
+          "logo": {
+            "@type": "ImageObject",
+            "url": "<%= amp_site_logo_url %>",
+            "width": <%= amp_site_logo_size[0] %>,
+            "height": <%= amp_site_logo_size[1] %>
+          }
+        },
+         "image": {
+          "@type": "ImageObject",
+          "url": "<%= site_logo_url %>",
+          "height": <%= site_logo_size[1] %>,
+          "width": <%= site_logo_size[0] %>
+        }
+      }
+    </script>
 </head>
 <body>
 <h1 id="articleTitle">Le blog d'archiloque.net</h1>
 <div id="content">
     <% articles.each do |article| %>
         <h4 class="blogHomePageArticleTitle"><%= "<a href=\"#{article.dir_name}/\">#{article.title}</a>" %></h4>
-        <div class="blogHomePageArticleSubtitle">par <%= article.authors %> <%= article.formatted_date %>
-        <div class="blogHomePageArticleDescription"><%= article.description %>
-    </div>
+        <div class="blogHomePageArticleSubtitle">par <%= article.authors %> <%= article.formatted_date %></div>
+        <div class="blogHomePageArticleDescription"><%= article.description %></div>
     <% end %>
 </div>
 </body>

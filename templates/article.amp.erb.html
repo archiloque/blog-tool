@@ -11,7 +11,7 @@
         "mainEntityOfPage": "http://cdn.ampproject.org/article-metadata.html",
         "headline": "[archiloque.net] <%= Nokogiri::HTML(article.title).text %>",
         "datePublished": "<%= article_published.xmlschema %>",
-        "dateUpdated": "<%= article_updated.xmlschema %>",
+        "dateModified": "<%= article_updated.xmlschema %>",
         <% if article.description %>
         "description": "<%= article.description %>",
         <% end %>
@@ -20,23 +20,27 @@
           "name": "<%= authors.first.name %>"
         },
         "publisher": {
-          "@type": "Person",
+          "@type": "Organization",
           "name": "<%= default_author.name %>",
           "logo": {
             "@type": "ImageObject",
-            "url": "<%= site_logo_url %>",
-            "width": <%= site_logo_size[0] %>,
-            "height": <%= site_logo_size[1] %>
+            "url": "<%= amp_site_logo_url %>",
+            "width": <%= amp_site_logo_size[0] %>,
+            "height": <%= amp_site_logo_size[1] %>
           }
         },
-        <% if article.image %>
-        "image": [
+        "image": {
           "@type": "ImageObject",
+        <% if article.image %>
           "url": "<%= "#{article.absolute_url}#{article.image}" %>",
-          "height": "<%= article.image_size[1] %>",
-          "width": "<%= article.image_size[0] %>",
-        ]
+          "height": <%= article.image_size[1] %>,
+          "width": <%= article.image_size[0] %>
+        <% else %>
+          "url": "<%= site_logo_url %>",
+          "width": <%= site_logo_size[0] %>,
+          "height": <%= site_logo_size[1] %>
         <% end %>
+        }
       }
     </script>
 
