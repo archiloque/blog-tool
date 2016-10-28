@@ -289,6 +289,10 @@ sitemap_target_file = File.join(BLOG_TARGET_PATH, SITEMAP_FILE)
 p "Rendering sitemap [#{sitemap_target_file}]"
 sitemap_builder = Nokogiri::XML::Builder.new(:encoding => 'UTF-8') do |xml|
   xml.urlset(xmlns: 'http://www.sitemaps.org/schemas/sitemap/0.9') do
+    xml.url do
+      xml.loc "#{BLOG_ROOT_URL}"
+    end
+
     ARTICLES.each do |article|
       xml.url do
         xml.loc "#{BLOG_ROOT_URL}#{article.dir_name}/"
