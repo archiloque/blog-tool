@@ -1,7 +1,7 @@
 #!/usr/bin/env ruby
 
-BLOG_SOURCE_PATH = ENV['BLOG_ROOT_PATH'] || '../blog/publies'
-BLOG_TARGET_PATH = ENV['BLOG_TARGET_PATH'] || '../blog-generated'
+BLOG_SOURCE_PATH = ENV['BLOG_ROOT_PATH'] || '../content/publies'
+BLOG_TARGET_PATH = ENV['BLOG_TARGET_PATH'] || '../generated'
 BLOG_ROOT_URL = ENV['BLOG_ROOT_URL'] || 'http://archiloque.net/blog/'
 LOGO_FILE = 'logo.png'
 AMP_LOGO_FILE = 'logo.amp.png'
@@ -42,9 +42,9 @@ unless BLOG_ROOT_URL.end_with? '/'
 end
 
 SITE_LOGO_URL = "#{BLOG_ROOT_URL}#{LOGO_FILE}"
-SITE_LOGO_SIZE = FastImage.size("static//#{LOGO_FILE}", :raise_on_failure => true)
+SITE_LOGO_SIZE = FastImage.size("static/#{LOGO_FILE}", :raise_on_failure => true)
 AMP_SITE_LOGO_URL = "#{BLOG_ROOT_URL}#{AMP_LOGO_FILE}"
-AMP_SITE_LOGO_SIZE = FastImage.size("static//#{AMP_LOGO_FILE}", :raise_on_failure => true)
+AMP_SITE_LOGO_SIZE = FastImage.size("static/#{AMP_LOGO_FILE}", :raise_on_failure => true)
 
 unless Dir.exist? BLOG_TARGET_PATH
   Dir.mkdir BLOG_TARGET_PATH
