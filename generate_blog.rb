@@ -22,6 +22,7 @@ require 'nokogiri'
 require 'pygments'
 require 'asciidoctor/converter/html5'
 require 'fastimage'
+require 'fileutils'
 
 class Asciidoctor::Converter::Html5Converter
 
