@@ -1,8 +1,22 @@
 #!/usr/bin/env ruby
 
-BLOG_SOURCE_PATH = ENV['BLOG_ROOT_PATH'] || '../content/publies'
-BLOG_TARGET_PATH = ENV['BLOG_TARGET_PATH'] || '../generated'
-BLOG_ROOT_URL = ENV['BLOG_ROOT_URL'] || 'http://archiloque.net/blog/'
+[
+  'BLOG_ROOT_PATH',
+  'BLOG_TARGET_PATH',
+  'BLOG_ROOT_URL',
+  'BLOG_NAME',
+].each do |key|
+  unless ENV[key]
+    raise "Env key [#{key}] is not defined"
+  end
+end
+
+BLOG_SOURCE_PATH = ENV['BLOG_ROOT_PATH']
+BLOG_TARGET_PATH = ENV['BLOG_TARGET_PATH']
+BLOG_ROOT_URL = ENV['BLOG_ROOT_URL']
+BLOG_NAME = ENV['BLOG_NAME']
+DISPLAY_ARTICLE_INFO = (ENV['DISPLAY_ARTICLE_INFO'] != 'no')
+
 LOGO_FILE = 'logo.png'
 AMP_LOGO_FILE = 'logo.amp.png'
 
@@ -11,7 +25,6 @@ BLOG_ARTICLE_TARGET_NAME = 'index.html'
 BLOG_ARTICLE_AMP_TARGET_NAME = 'index.amp.html'
 SITEMAP_FILE = 'sitemap.xml'
 ATOM_FILE = 'atom.xml'
-
 
 require 'asciidoctor'
 require 'erb'
@@ -39,7 +52,7 @@ class Asciidoctor::Converter::Html5Converter
 end
 
 unless BLOG_ROOT_URL.end_with? '/'
-  raise "BLOG_ROOT_URL should end with a '/'"
+    raise "BLOG_ROOT_URL should end with a '/'"
 end
 
 SITE_LOGO_URL = "#{BLOG_ROOT_URL}#{LOGO_FILE}"
@@ -48,7 +61,7 @@ AMP_SITE_LOGO_URL = "#{BLOG_ROOT_URL}#{AMP_LOGO_FILE}"
 AMP_SITE_LOGO_SIZE = FastImage.size("static/#{AMP_LOGO_FILE}", :raise_on_failure => true)
 
 unless Dir.exist? BLOG_TARGET_PATH
-  Dir.mkdir BLOG_TARGET_PATH
+  FileUtils.mkpath BLOG_TARGET_PATH
 end
 
 class Author
@@ -87,11 +100,12 @@ ARTICLES = []
 
 class Article
 
-  MONTHS = [nil, 'janvier', 'février', 'mars', 'avril', 'mai', 'juin', 'juillet', 'août', 'septembre', 'octobre', 'novembre', 'décembre']
+  FRENCH_MONTHS = [nil, 'janvier', 'février', 'mars', 'avril', 'mai', 'juin', 'juillet', 'août', 'septembre', 'octobre', 'novembre', 'décembre']
 
   attr_reader :dir_name, :document, :source_dir, :date, :last_modified_time
 
-  def initialize(dir_name, document, source_dir, last_modified_time)
+  def initialize(root_url, dir_name, document, source_dir, last_modified_time)
+    @root_url = root_url
     @dir_name = dir_name
     @document = document
     @source_dir = source_dir
@@ -151,7 +165,7 @@ class Article
   end
 
   def absolute_url
-    BLOG_ROOT_URL + dir_name + '/'
+    @root_url + dir_name + '/'
   end
 
   def content
@@ -168,7 +182,7 @@ class Article
 
   def formatted_date
     if lang == 'fr'
-      "le #{date.day} #{MONTHS[date.month]} #{date.year}"
+      "le #{date.day} #{FRENCH_MONTHS[date.month]} #{date.year}"
     else
       date.strftime '%B %e, %Y'
     end
@@ -183,7 +197,10 @@ class Article
 
 end
 
-[BLOG_TARGET_PATH, BLOG_SOURCE_PATH].each do |dir|
+[
+  BLOG_TARGET_PATH,
+  BLOG_SOURCE_PATH,
+  ].each do |dir|
   unless Dir.exist? dir
     raise "[#{dir}] does not exist"
   end
@@ -209,6 +226,7 @@ Dir.glob(File.join(BLOG_SOURCE_PATH, '*')).each do |article_dir|
         }
       })
     ARTICLES << Article.new(
+      BLOG_ROOT_URL,
       File.basename(article_dir),
       article_document,
       article_dir,
@@ -235,6 +253,8 @@ File.open(main_target_file, 'w') do |file|
         :amp_site_logo_url => AMP_SITE_LOGO_URL,
         :site_logo_size => SITE_LOGO_SIZE,
         :amp_site_logo_size => AMP_SITE_LOGO_SIZE,
+        :blog_name => BLOG_NAME,
+        :display_article_info => DISPLAY_ARTICLE_INFO,
       }))
 end
 
@@ -254,8 +274,8 @@ rss = RSS::Maker.make('atom') do |maker|
     link.href= "#{BLOG_ROOT_URL}atom.xml"
     link.rel = 'self'
   end
-  channel.title = "Le blog d'archiloque.net"
-  channel.description = "Le blog d'archiloque.net"
+  channel.title = BLOG_NAME
+  channel.description = BLOG_NAME
   channel.language = 'fr'
 
   ARTICLES.each do |article|
@@ -350,6 +370,8 @@ ARTICLES.each_with_index do |article, article_index|
     :default_author => DEFAULT_AUTHOR,
     :next_article => (article_index != 0) ? ARTICLES[article_index - 1] : nil,
     :previous_article => (article_index != (ARTICLES.length() -1)) ? ARTICLES[article_index + 1] : nil,
+    :blog_name => BLOG_NAME,
+    :display_article_info => DISPLAY_ARTICLE_INFO,
   }
 
   article_target_dir = File.join(BLOG_TARGET_PATH, article.dir_name)

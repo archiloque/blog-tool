@@ -2,12 +2,12 @@
 <!DOCTYPE html>
 <html lang="fr">
 <head>
-    <title>[archiloque.net] Le blog</title>
+    <title><%= blog_name %></title>
     <meta name="viewport" content="width=850">
     <meta charset="utf-8">
     <meta name="robots" CONTENT="all">
     <link type="text/css" rel="stylesheet" href="blog.css">
-    <link rel="alternate" type="application/atom+xml" title="Le blog d'archiloque.net" href="<%= blog_root_url %>atom.xml" />
+    <link rel="alternate" type="application/atom+xml" title="<% blog_name %>" href="<%= blog_root_url %>atom.xml" />
     <link rel="shortcut icon" href="/favicon.ico" />
 
     <meta property="og:type" content="article"/>
@@ -15,12 +15,12 @@
 
     <meta property="og:site_name" content="archiloque.net"/>
 
-    <meta property="og:title" content="Le blog"/>
-    <meta property="twitter:title" content="Le blog"/>
+    <meta property="og:title" content="<%= blog_name %>"/>
+    <meta property="twitter:title" content="<%= blog_name %>"/>
 
-    <meta name="description" content="Le blog d'archiloque.net"/>
-    <meta property="og:description" content="Le blog d'archiloque.net"/>
-    <meta property="twitter:description" content="Le blog d'archiloque.net"/>
+    <meta name="description" content="<%= blog_name %>"/>
+    <meta property="og:description" content="<%= blog_name %>"/>
+    <meta property="twitter:description" content="<%= blog_name %>"/>
 
     <meta property="twitter:site" content="<%= author.twitter_handle %>"/>
     <meta property="article:author" content="<%= author.fb_url %>"/>
@@ -36,7 +36,7 @@
         "@context": "http://schema.org",
         "@type": "NewsArticle",
         "mainEntityOfPage": "http://cdn.ampproject.org/article-metadata.html",
-        "headline": "[archiloque.net] Le blog",
+        "headline": "<%= blog_name %>",
         "datePublished": "<%= articles.last.date.xmlschema %>",
         "dateModified": "<%= articles.first.last_modified_time.xmlschema %>",
         "author": {
@@ -63,11 +63,13 @@
     </script>
 </head>
 <body>
-<h1 id="articleTitle">Le blog d'archiloque.net</h1>
+<h1 id="articleTitle"><%= blog_name %></h1>
 <div id="content">
     <% articles.each do |article| %>
         <h4 class="blogHomePageArticleTitle"><%= "<a href=\"#{article.dir_name}/\">#{article.title}</a>" %></h4>
-        <div class="blogHomePageArticleSubtitle">par <%= article.authors %> <%= article.formatted_date %></div>
+        <% if display_article_info %>
+          <div class="blogHomePageArticleSubtitle">par <%= article.authors %> <%= article.formatted_date %></div>
+        <% end %>
         <div class="blogHomePageArticleDescription"><%= article.description %></div>
     <% end %>
 </div>

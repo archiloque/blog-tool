@@ -45,7 +45,7 @@
     </script>
 
     <meta name="robots" CONTENT="all">
-    <link rel="alternate" type="application/atom+xml" title="Le blog d'archiloque.net" href="<%= blog_root_url %>atom.xml" />
+    <link rel="alternate" type="application/atom+xml" title="<% blog_name %>" href="<%= blog_root_url %>atom.xml" />
     <link rel="shortcut icon" href="/favicon.ico" />
     <link rel="canonical" href="<%= article.absolute_url %>" />
 
@@ -87,9 +87,11 @@
 <h1 id="articleTitle"><%= article.title %></h1>
 <div id="content">
     <article>
-        <div id="subtitle"><%= (lang == 'en') ? 'by' : 'par' %> <%= authors.collect{|author| author.main_url ? "<a href=\"#{author.main_url}\">#{author.name}</a>" : author.name }.join(', ') %>, <%=
-            article_date %>
-        </div>
+        <% if display_article_info %>
+          <div id="subtitle"><%= (lang == 'fr') ? 'par' : 'by' %> <%= authors.collect{|author| author.main_url ? "<a href=\"#{author.main_url}\">#{author.name}</a>" : author.name }.join(', ') %>, <%=
+              article_date %>
+          </div>
+        <% end %>
         <%= amp_content %>
     </article>
 </div>

@@ -86,25 +86,25 @@ nav a:hover {
 }
 
 blockquote {
-    padding-left: 30px;
-    padding-right: 30px;
+    padding-left: 15px;
+    padding-right: 15px;
     padding-bottom: 20px;
     position: relative;
 }
 
+blockquote:before, blockquote:after {
+  display: block;
+  font-size: 72px;
+  position: absolute;
+}
+
 blockquote:before {
-    display: block;
     content: "\201C";
-    font-size: 128px;
-    position: absolute;
     left: -30px;
     top: 20px;
 }
 blockquote:after {
-    display: block;
     content: "\201D";
-    font-size: 128px;
-    position: absolute;
     right: -30px;
     bottom: 0px;
 }
