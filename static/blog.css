@@ -90,6 +90,7 @@ blockquote {
     padding-right: 15px;
     padding-bottom: 20px;
     position: relative;
+    text-align: justify;
 }
 
 blockquote:before, blockquote:after {
@@ -105,8 +106,8 @@ blockquote:before {
 }
 blockquote:after {
     content: "\201D";
-    right: -10px;
-    bottom: 0px;
+    right: -30px;
+    bottom: 15px;
 }
 
 .attribution {
