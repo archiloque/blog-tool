@@ -12,7 +12,7 @@ h1, h2, h3, h4, h5 {
 
 h5 {
   font-size: 18px;
-  font-weight: bold;  
+  font-weight: bold;
 }
 
 #navTop {
@@ -135,13 +135,24 @@ p {
     padding-bottom: 80px;
 }
 
-#content {
+#content, #footer {
     margin-left: auto;
     margin-right: auto;
+    max-width: 800px;
 }
 
-#content {
-    max-width: 800px;
+#footer {
+    margin-top: 10px;
+    margin-bottom: 20px;
+    text-align: center;
+}
+
+#footer ul li {
+  display: inline;
+}
+
+#footer ul li + li:before {
+    content: " – ";
 }
 
 .title {
