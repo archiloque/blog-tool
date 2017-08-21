@@ -113,11 +113,12 @@ class Article
     @last_modified_time = last_modified_time
     @raw_content = document.render
     @parsed_content = Nokogiri::HTML::fragment(@raw_content)
-    add_images_size
+    improve_images
     create_amp_content
+    create_feed_content
   end
 
-  def add_images_size
+  def improve_images
     @parsed_content.css('img').each do |img|
       img_size = fetch_image_size(img['src'])
       img['width'] = "#{img_size[0]}px"
@@ -133,7 +134,13 @@ class Article
     @amp_content.css('[style]').each do |element_with_style|
       element_with_style.delete('style')
     end
+  end
 
+  def create_feed_content
+    @feed_content = @parsed_content.dup
+    @feed_content.css('img').each do |img|
+      img['src'] = "#{absolute_url}#{img['src']}"
+    end
   end
 
   def title
@@ -174,6 +181,10 @@ class Article
 
   def amp_content
     @amp_content.to_s
+  end
+
+  def feed_content
+    @feed_content.to_s
   end
 
   def ignore_files
@@ -296,7 +307,7 @@ rss = RSS::Maker.make('atom') do |maker|
       item.summary = article.description
 
       item.content.type = 'html'
-      item.content.content = article.content
+      item.content.content = article.feed_content
     end
   end
 end
