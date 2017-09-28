@@ -1,8 +1,10 @@
-
 <!DOCTYPE html>
 <html lang="fr">
+
 <head>
-    <title><%= blog_name %></title>
+    <title>
+        <%= blog_name %>
+    </title>
     <meta name="viewport" content="width=850">
     <meta charset="utf-8">
     <meta name="robots" CONTENT="all">
@@ -10,78 +12,88 @@
     <link rel="alternate" type="application/atom+xml" title="<% blog_name %>" href="<%= blog_root_url %>atom.xml" />
     <link rel="shortcut icon" href="/favicon.ico" />
 
-    <meta property="og:type" content="article"/>
+    <meta property="og:type" content="article" />
     <meta name="twitter:card" content="summary" />
 
-    <meta property="og:site_name" content="archiloque.net"/>
+    <meta property="og:site_name" content="archiloque.net" />
 
-    <meta property="og:title" content="<%= blog_name %>"/>
-    <meta property="twitter:title" content="<%= blog_name %>"/>
+    <meta property="og:title" content="<%= blog_name %>" />
+    <meta property="twitter:title" content="<%= blog_name %>" />
 
-    <meta name="description" content="<%= blog_name %>"/>
-    <meta property="og:description" content="<%= blog_name %>"/>
-    <meta property="twitter:description" content="<%= blog_name %>"/>
+    <meta name="description" content="<%= blog_name %>" />
+    <meta property="og:description" content="<%= blog_name %>" />
+    <meta property="twitter:description" content="<%= blog_name %>" />
 
-    <meta property="twitter:site" content="<%= author.twitter_handle %>"/>
-    <meta property="article:author" content="<%= author.fb_url %>"/>
+    <meta property="twitter:site" content="<%= author.twitter_handle %>" />
+    <meta property="article:author" content="<%= author.fb_url %>" />
 
-    <meta property="og:locale" content="fr_FR"/>
-    <meta property="og:url" content="<%= blog_root_url %>"/>
+    <meta property="og:locale" content="fr_FR" />
+    <meta property="og:url" content="<%= blog_root_url %>" />
     <meta property="og:image" content="<%= site_logo_url %>" />
     <meta property="twitter:image" content="<%= site_logo_url %>" />
-    <meta property="og:type" content="article"/>
+    <meta property="og:type" content="article" />
 
     <script type="application/ld+json">
-      {
-        "@context": "http://schema.org",
-        "@type": "NewsArticle",
-        "mainEntityOfPage": "http://cdn.ampproject.org/article-metadata.html",
-        "headline": "<%= blog_name %>",
-        "datePublished": "<%= articles.last.date.xmlschema %>",
-        "dateModified": "<%= articles.first.last_modified_time.xmlschema %>",
-        "author": {
-          "@type": "Person",
-          "name": "<%= author.name %>"
-        },
-        "publisher": {
-          "@type": "Organization",
-          "name": "<%= author.name %>",
-          "logo": {
-            "@type": "ImageObject",
-            "url": "<%= amp_site_logo_url %>",
-            "width": <%= amp_site_logo_size[0] %>,
-            "height": <%= amp_site_logo_size[1] %>
-          }
-        },
-         "image": {
-          "@type": "ImageObject",
-          "url": "<%= site_logo_url %>",
-          "height": <%= site_logo_size[1] %>,
-          "width": <%= site_logo_size[0] %>
+        {
+            "@context": "http://schema.org",
+            "@type": "NewsArticle",
+            "mainEntityOfPage": "http://cdn.ampproject.org/article-metadata.html",
+            "headline": "<%= blog_name %>",
+            "datePublished": "<%= articles.last.date.xmlschema %>",
+            "dateModified": "<%= articles.first.last_modified_time.xmlschema %>",
+            "author": {
+                "@type": "Person",
+                "name": "<%= author.name %>"
+            },
+            "publisher": {
+                "@type": "Organization",
+                "name": "<%= author.name %>",
+                "logo": {
+                    "@type": "ImageObject",
+                    "url": "<%= amp_site_logo_url %>",
+                    "width": <%= amp_site_logo_size[0] %>,
+                    "height": <%= amp_site_logo_size[1] %>
+                }
+            },
+            "image": {
+                "@type": "ImageObject",
+                "url": "<%= site_logo_url %>",
+                "height": <%= site_logo_size[1] %>,
+                "width": <%= site_logo_size[0] %>
+            }
         }
-      }
     </script>
 </head>
-<body>
-<h1 id="articleTitle"><%= blog_name %></h1>
-<div id="content">
-    <% articles.each do |article| %>
-        <h4 class="blogHomePageArticleTitle"><%= "<a href=\"#{article.dir_name}/\">#{article.title}</a>" %></h4>
-        <% if display_article_info %>
-          <div class="blogHomePageArticleSubtitle">par <%= article.authors %> <%= article.formatted_date %></div>
-        <% end %>
-        <div class="blogHomePageArticleDescription"><%= article.description %></div>
-    <% end %>
-</div>
 
-<nav id="footer">
-  <ul>
-    <li><a href="http://archiloque.net">Homepage</a></li>
-    <li><a href="http://archiloque.net/blog">Blog</a></li>
-    <li><a href="http://archiloque.net/weekly">Weekly</a></li>
-    <li><a href="http://twitter.com/archiloque">Twitter</a></li>
-  </ul>
-</nav>
+<body>
+    <h1 id="articleTitle">
+        <%= blog_name %>
+    </h1>
+    <div id="content">
+        <% articles.each do |article| %>
+            <h4 class="blogHomePageArticleTitle">
+                <%= "<a href=\"#{article.dir_name}/\">#{article.title}</a>" %></h4>
+            <% if display_article_info %>
+                <div class="blogHomePageArticleSubtitle">par
+                    <%= article.authors %> —
+                        <%= article.formatted_date %>
+                </div>
+                <% end %>
+                    <div class="blogHomePageArticleDescription">
+                        <%= article.description %>
+                    </div>
+                    <% end %>
+    </div>
+
+    <nav id="footer">
+        <ul>
+            <li><a href="http://archiloque.net">Homepage</a></li>
+            <li><a href="http://archiloque.net/blog">Blog</a></li>
+            <li><a href="http://archiloque.net/weekly">Weekly</a></li>
+            <li><a href="http://twitter.com/archiloque">Twitter</a></li>
+        </ul>
+    </nav>
 
 </body>
+
 </html>
