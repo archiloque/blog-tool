@@ -18,11 +18,9 @@ BLOG_NAME = ENV['BLOG_NAME']
 DISPLAY_ARTICLE_INFO = (ENV['DISPLAY_ARTICLE_INFO'] != 'no')
 
 LOGO_FILE = 'logo.png'
-AMP_LOGO_FILE = 'logo.amp.png'
 
 BLOG_ARTICLE_BASE_NAME = 'README.asciidoc'
 BLOG_ARTICLE_TARGET_NAME = 'index.html'
-BLOG_ARTICLE_AMP_TARGET_NAME = 'index.amp.html'
 SITEMAP_FILE = 'sitemap.xml'
 ATOM_FILE = 'atom.xml'
 
@@ -57,8 +55,6 @@ end
 
 SITE_LOGO_URL = "#{BLOG_ROOT_URL}#{LOGO_FILE}"
 SITE_LOGO_SIZE = FastImage.size("static/#{LOGO_FILE}", :raise_on_failure => true)
-AMP_SITE_LOGO_URL = "#{BLOG_ROOT_URL}#{AMP_LOGO_FILE}"
-AMP_SITE_LOGO_SIZE = FastImage.size("static/#{AMP_LOGO_FILE}", :raise_on_failure => true)
 
 unless Dir.exist? BLOG_TARGET_PATH
   FileUtils.mkpath BLOG_TARGET_PATH
@@ -114,8 +110,6 @@ class Article
     @raw_content = document.render
     @parsed_content = Nokogiri::HTML::fragment(@raw_content)
     improve_images
-    create_amp_content
-    create_feed_content
   end
 
   def improve_images
@@ -123,16 +117,6 @@ class Article
       img_size = fetch_image_size(img['src'])
       img['width'] = "#{img_size[0]}px"
       img['height'] = "#{img_size[1]}px"
-    end
-  end
-
-  def create_amp_content
-    @amp_content = @parsed_content.dup
-    @amp_content.css('img').each do |img|
-      img.name = 'amp-img'
-    end
-    @amp_content.css('[style]').each do |element_with_style|
-      element_with_style.delete('style')
     end
   end
 
@@ -177,10 +161,6 @@ class Article
 
   def content
     @parsed_content.to_s
-  end
-
-  def amp_content
-    @amp_content.to_s
   end
 
   def feed_content
@@ -261,9 +241,7 @@ File.open(main_target_file, 'w') do |file|
         :blog_root_url => BLOG_ROOT_URL,
         :author => DEFAULT_AUTHOR,
         :site_logo_url => SITE_LOGO_URL,
-        :amp_site_logo_url => AMP_SITE_LOGO_URL,
         :site_logo_size => SITE_LOGO_SIZE,
-        :amp_site_logo_size => AMP_SITE_LOGO_SIZE,
         :blog_name => BLOG_NAME,
         :display_article_info => DISPLAY_ARTICLE_INFO,
       }))
@@ -349,7 +327,6 @@ def copy_if_different(source, target)
 end
 
 article_template = Tilt::ERBTemplate.new('templates/article.erb.html', :default_encoding => 'UTF-8')
-article_amp_template = Tilt::ERBTemplate.new('templates/article.amp.erb.html', :default_encoding => 'UTF-8')
 
 ##
 # Render a content
@@ -375,9 +352,7 @@ ARTICLES.each_with_index do |article, article_index|
     :article_updated => article.last_modified_time,
     :lang => article.lang,
     :site_logo_url => SITE_LOGO_URL,
-    :amp_site_logo_url => AMP_SITE_LOGO_URL,
     :site_logo_size => SITE_LOGO_SIZE,
-    :amp_site_logo_size => AMP_SITE_LOGO_SIZE,
     :default_author => DEFAULT_AUTHOR,
     :next_article => (article_index != 0) ? ARTICLES[article_index - 1] : nil,
     :previous_article => (article_index != (ARTICLES.length() -1)) ? ARTICLES[article_index + 1] : nil,
@@ -399,16 +374,9 @@ ARTICLES.each_with_index do |article, article_index|
     article_template,
     article_parameters.merge({:article_content => article.content}))
 
-  # Render amp article
-  article_amp_target_file = File.join(article_target_dir, BLOG_ARTICLE_AMP_TARGET_NAME)
-  render_content(
-    article_amp_target_file,
-    article_amp_template,
-    article_parameters.merge({:amp_content => article.amp_content}))
-
   # Copy other files
   existing_files = Dir.glob(File.join(article_target_dir, '*')).collect { |f| File.basename(f) }
-  existing_files -= [BLOG_ARTICLE_TARGET_NAME, BLOG_ARTICLE_AMP_TARGET_NAME]
+  existing_files -= [BLOG_ARTICLE_TARGET_NAME]
   ignore_files = article.ignore_files + [BLOG_ARTICLE_BASE_NAME, 'README.html']
   Dir.glob(File.join(article.source_dir, '*')).each do |attached_file_source|
     attached_file_base_name = File.basename(attached_file_source)

@@ -9,7 +9,6 @@
     <link rel="alternate" type="application/atom+xml" title="<%= blog_name %>" href="<%= blog_root_url %>atom.xml" />
     <link rel="shortcut icon" href="/favicon.ico" />
     <link rel="canonical" href="<%= article.absolute_url %>" />
-    <link rel="amphtml" href="<%= article.absolute_url %>index.amp.html">
 
     <meta name="author" content="<%= authors.collect{|a| a.name}.join(', ') %>">
     <meta property="og:type" content="article"/>
@@ -46,7 +45,6 @@
       {
         "@context": "http://schema.org",
         "@type": "NewsArticle",
-        "mainEntityOfPage": "http://cdn.ampproject.org/article-metadata.html",
         "headline": "[archiloque.net] <%= Nokogiri::HTML(article.title).text %>",
         "datePublished": "<%= article_published.xmlschema %>",
         "dateModified": "<%= article_updated.xmlschema %>",
@@ -62,9 +60,9 @@
           "name": "<%= default_author.name %>",
           "logo": {
             "@type": "ImageObject",
-            "url": "<%= amp_site_logo_url %>",
-            "width": <%= amp_site_logo_size[0] %>,
-            "height": <%= amp_site_logo_size[1] %>
+            "url": "<%= site_logo_url %>",
+            "width": <%= site_logo_size[0] %>,
+            "height": <%= site_logo_size[1] %>
           }
         },
         "image": {
