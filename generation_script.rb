@@ -110,6 +110,7 @@ class Article
     @raw_content = document.render
     @parsed_content = Nokogiri::HTML::fragment(@raw_content)
     improve_images
+    create_feed_content
   end
 
   def improve_images
