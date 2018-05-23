@@ -268,7 +268,7 @@ rss = RSS::Maker.make('atom') do |maker|
   channel.description = BLOG_NAME
   channel.language = 'fr'
 
-  ARTICLES.each do |article|
+  ARTICLES[0..10].each do |article|
     article_authors = authors_details_from_names(article.authors)
 
     maker.items.new_item do |item|
