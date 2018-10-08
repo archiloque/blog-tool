@@ -16,13 +16,13 @@
 
     <meta property="og:site_name" content="archiloque.net"/>
 
-    <meta property="og:title" content="<%= Nokogiri::HTML(article.title).text %>"/>
-    <meta property="twitter:title" content="<%= Nokogiri::HTML(article.title).text %>"/>
+    <meta property="og:title" content="<%= CGI::escapeHTML(Nokogiri::HTML(article.title).text) %>"/>
+    <meta property="twitter:title" content="<%= CGI::escapeHTML(Nokogiri::HTML(article.title).text) %>"/>
 
     <% if article.description %>
-    <meta name="description" content="<%= article.description %>"/>
-    <meta property="og:description" content="<%= article.description %>"/>
-    <meta property="twitter:description" content="<%= article.description %>"/>
+    <meta name="description" content="<%= CGI::escapeHTML(article.description) %>"/>
+    <meta property="og:description" content="<%= CGI::escapeHTML(article.description) %>"/>
+    <meta property="twitter:description" content="<%= CGI::escapeHTML(article.description) %>"/>
     <% end %>
 
     <% if authors.first.fb_url %>

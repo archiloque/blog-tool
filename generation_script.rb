@@ -233,6 +233,7 @@ ARTICLES.sort_by! { |article| article.date }.reverse!
 main_template = Tilt::ERBTemplate.new('templates/main.erb.html', :default_encoding => 'UTF-8')
 main_target_file = File.join(BLOG_TARGET_PATH, BLOG_ARTICLE_TARGET_NAME)
 p "Rendering main [#{main_target_file}]"
+
 File.open(main_target_file, 'w') do |file|
   file.puts(
     main_template.render(
