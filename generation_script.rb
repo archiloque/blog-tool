@@ -115,9 +115,11 @@ class Article
 
   def improve_images
     @parsed_content.css('img').each do |img|
-      img_size = fetch_image_size(img['src'])
-      img['width'] = "#{img_size[0]}px"
-      img['height'] = "#{img_size[1]}px"
+      unless img['width'] || img['height']
+        img_size = fetch_image_size(img['src'])
+        img['width'] = "#{img_size[0]}px"
+        img['height'] = "#{img_size[1]}px"
+      end
     end
   end
 
