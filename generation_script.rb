@@ -400,19 +400,12 @@ ARTICLES.each_with_index do |article, article_index|
 
 end
 
-BLOG_CSS_FILE = 'blog.css'
+BLOG_ORIGINAL_CSS_FILE = 'blog.original.css'
 
 p 'Static files'
 Dir.glob(File.join('static', '*')).each do |file|
   file_basename = File.basename(file)
-  unless [BLOG_CSS_FILE].include? file_basename
+  unless [BLOG_ORIGINAL_CSS_FILE].include? file_basename
     copy_if_different(file, File.join(BLOG_TARGET_PATH, file_basename))
   end
-end
-
-p 'Blog.css'
-blog_css_content = IO.read(File.join('static', BLOG_CSS_FILE))
-pygment_stylesheet_content = Asciidoctor::Stylesheets.instance.pygments_stylesheet_data('fruity')
-File.open(File.join(BLOG_TARGET_PATH, BLOG_CSS_FILE), 'w') do |file|
-  file << "#{blog_css_content}\n/* Pygments */\n#{pygment_stylesheet_content}"
 end
