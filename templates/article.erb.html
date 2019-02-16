@@ -10,7 +10,7 @@
     <link rel="shortcut icon" href="/favicon.ico" />
     <link rel="canonical" href="<%= article.absolute_url %>" />
 
-    <meta name="author" content="<%= authors.collect{|a| a.name}.join(', ') %>">
+    <meta name="author" content="<%= article.authors.collect{|a| a.name}.join(', ') %>">
     <meta property="og:type" content="article"/>
     <meta name="twitter:card" content="summary" />
 
@@ -25,12 +25,12 @@
     <meta property="twitter:description" content="<%= CGI::escapeHTML(article.description) %>"/>
     <% end %>
 
-    <% if authors.first.fb_url %>
-    <meta property="article:author" content="<%= authors.first.fb_url %>"/>
+    <% if article.authors.first.fb_url %>
+    <meta property="article:author" content="<%= article.authors.first.fb_url %>"/>
     <% end %>
 
-    <% if authors.first.twitter_handle %>
-    <meta property="twitter:site" content="<%= authors.first.twitter_handle %>"/>
+    <% if article.authors.first.twitter_handle %>
+    <meta property="twitter:site" content="<%= article.authors.first.twitter_handle %>"/>
     <% end %>
 
     <meta property="og:locale" content="fr_FR"/>
@@ -53,7 +53,7 @@
         <% end %>
         "author": {
           "@type": "Person",
-          "name": "<%= authors.first.name %>"
+          "name": "<%= article.authors.first.name %>"
         },
         "publisher": {
           "@type": "Organization",
@@ -88,11 +88,14 @@
 <h1 id="articleTitle"><%= article.title %></h1>
 <div id="content">
     <article>
-    <% if display_article_info %>
-      <div id="subtitle"><%= (lang == 'fr') ? 'par' : 'by' %> <%= authors.collect{|author| author.main_url ? "<a href=\"#{author.main_url}\">#{author.name}</a>" : author.name }.join(', ') %>, <%=
-          article_date %>
-      </div>
-    <% end %>
+    <div id="subtitle">
+        <%= (lang == 'fr') ? 'par' : 'by' %>
+        <%= article.authors.collect{|author| author.main_url ? "<a href=\"#{author.main_url}\">#{author.name}</a>" : author.name }.join(', ') %>
+        <% if display_article_date %>
+            , 
+            <%= article_date %>
+        <% end %>
+    </div>
     <%= article_content %>
     </article>
     <nav id="navBottom">

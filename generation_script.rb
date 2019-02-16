@@ -15,7 +15,7 @@ BLOG_SOURCE_PATH = ENV['BLOG_ROOT_PATH']
 BLOG_TARGET_PATH = ENV['BLOG_TARGET_PATH']
 BLOG_ROOT_URL = ENV['BLOG_ROOT_URL']
 BLOG_NAME = ENV['BLOG_NAME']
-DISPLAY_ARTICLE_INFO = (ENV['DISPLAY_ARTICLE_INFO'] != 'no')
+DISPLAY_ARTICLE_DATE = (ENV['DISPLAY_ARTICLE_DATE'] != 'false')
 
 LOGO_FILE = 'logo.png'
 
@@ -81,17 +81,6 @@ JSON.parse(File.read('authors.json')).collect do |name, value|
   AUTHORS[name] = author
 end
 
-def authors_details_from_names(authors)
-  authors.split(',').map do |a|
-    a.strip!
-    if AUTHORS.key? a
-      AUTHORS[a]
-    else
-      raise "Unknown author [#{a}]"
-    end
-  end
-end
-
 ARTICLES = []
 
 class Article
@@ -139,7 +128,14 @@ class Article
   end
 
   def authors
-    document.attributes['authors']
+    document.attributes['authors'].split(',').map do |a|
+      a.strip!
+      if AUTHORS.key? a
+        AUTHORS[a]
+      else
+        raise "Unknown author [#{a}]"
+      end
+    end
   end
 
   def image
@@ -180,6 +176,10 @@ class Article
     else
       date.strftime '%B %e, %Y'
     end
+  end
+
+  def display_authors?
+    (authors.length != 1) || (authors.first.name != DEFAULT_AUTHOR.name)
   end
 
   private
@@ -247,7 +247,7 @@ File.open(main_target_file, 'w') do |file|
         :site_logo_url => SITE_LOGO_URL,
         :site_logo_size => SITE_LOGO_SIZE,
         :blog_name => BLOG_NAME,
-        :display_article_info => DISPLAY_ARTICLE_INFO,
+        :display_article_date => DISPLAY_ARTICLE_DATE,
       }))
 end
 
@@ -272,7 +272,6 @@ rss = RSS::Maker.make('atom') do |maker|
   channel.language = 'fr'
 
   ARTICLES[0..10].each do |article|
-    article_authors = authors_details_from_names(article.authors)
 
     maker.items.new_item do |item|
       item.link = "#{BLOG_ROOT_URL}#{article.dir_name}/"
@@ -280,7 +279,7 @@ rss = RSS::Maker.make('atom') do |maker|
       item.published = article.date.xmlschema
 
       item.title = article.title
-      article_authors.each do |article_author|
+      article.authors.each do |article_author|
         item.authors.new_author do |author|
           author.name = article_author.name
           author.uri = article_author.main_url
@@ -346,11 +345,9 @@ def render_content(target_file, template, parameters)
 end
 
 ARTICLES.each_with_index do |article, article_index|
-  article_authors = authors_details_from_names(article.authors)
   article_parameters = {
     :article => article,
     :blog_root_url => BLOG_ROOT_URL,
-    :authors => article_authors,
     :article_date => article.formatted_date,
     :article_published => article.date,
     :article_updated => article.last_modified_time,
@@ -361,7 +358,7 @@ ARTICLES.each_with_index do |article, article_index|
     :next_article => (article_index != 0) ? ARTICLES[article_index - 1] : nil,
     :previous_article => (article_index != (ARTICLES.length() -1)) ? ARTICLES[article_index + 1] : nil,
     :blog_name => BLOG_NAME,
-    :display_article_info => DISPLAY_ARTICLE_INFO,
+    :display_article_date => DISPLAY_ARTICLE_DATE
   }
 
   article_target_dir = File.join(BLOG_TARGET_PATH, article.dir_name)

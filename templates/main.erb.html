@@ -73,16 +73,24 @@
         <% articles.each do |article| %>
             <h4 class="blogHomePageArticleTitle">
                 <%= "<a href=\"#{article.dir_name}/\">#{article.title}</a>" %></h4>
-            <% if display_article_info %>
-                <div class="blogHomePageArticleSubtitle">par
-                    <%= article.authors %> —
-                        <%= article.formatted_date %>
-                </div>
-                <% end %>
-                    <div class="blogHomePageArticleDescription">
-                        <%= article.description %>
-                    </div>
+            <% if article.display_authors? || display_article_date %>
+                <div class="blogHomePageArticleSubtitle">
+                    <% if article.display_authors? %>
+                        par
+                        <%= article.authors.collect{|a| a.name}.join(', ') %>
+                        <% if display_article_date %>
+                        —    
+                        <% end %>
                     <% end %>
+                    <% if display_article_date %>
+                        <%= article.formatted_date %>
+                    <% end %>
+                </div>
+            <% end %>
+            <div class="blogHomePageArticleDescription">
+                <%= article.description %>
+            </div>
+        <% end %>
     </div>
 
     <nav id="footer">
