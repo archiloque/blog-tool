@@ -24,6 +24,8 @@ BLOG_ARTICLE_TARGET_NAME = 'index.html'
 SITEMAP_FILE = 'sitemap.xml'
 ATOM_FILE = 'atom.xml'
 
+FILE_PERMISSIONS = 0755
+
 require 'asciidoctor'
 require 'erb'
 require 'tilt'
@@ -57,7 +59,7 @@ SITE_LOGO_URL = "#{BLOG_ROOT_URL}#{LOGO_FILE}"
 SITE_LOGO_SIZE = FastImage.size("static/#{LOGO_FILE}", :raise_on_failure => true)
 
 unless Dir.exist? BLOG_TARGET_PATH
-  FileUtils.mkpath BLOG_TARGET_PATH
+  FileUtils.mkpath(BLOG_TARGET_PATH, {:mode => FILE_PERMISSIONS})
 end
 
 class Author
@@ -236,7 +238,7 @@ main_template = Tilt::ERBTemplate.new('templates/main.erb.html', :default_encodi
 main_target_file = File.join(BLOG_TARGET_PATH, BLOG_ARTICLE_TARGET_NAME)
 p "Rendering main [#{main_target_file}]"
 
-File.open(main_target_file, 'w') do |file|
+File.open(main_target_file, 'w', FILE_PERMISSIONS) do |file|
   file.puts(
     main_template.render(
       Object.new,
@@ -293,7 +295,7 @@ rss = RSS::Maker.make('atom') do |maker|
   end
 end
 
-File.open(atom_target_file, 'w') do |file|
+File.open(atom_target_file, 'w', FILE_PERMISSIONS) do |file|
   file.puts(rss)
 end
 
@@ -314,7 +316,7 @@ sitemap_builder = Nokogiri::XML::Builder.new(:encoding => 'UTF-8') do |xml|
   end
 end
 
-File.open(sitemap_target_file, 'w') do |file|
+File.open(sitemap_target_file, 'w', FILE_PERMISSIONS) do |file|
   file.puts(sitemap_builder.to_xml)
 end
 
@@ -325,7 +327,8 @@ end
 def copy_if_different(source, target)
   unless File.exist?(target) && (File.mtime(source) == File.mtime(target))
     p "Copy [#{source}] to [#{target}]"
-    FileUtils.copy_entry source, target, true
+    FileUtils.copy_entry(source, target, true)
+    File.chmod(FILE_PERMISSIONS, target)
   end
 end
 
@@ -337,10 +340,15 @@ article_template = Tilt::ERBTemplate.new('templates/article.erb.html', :default_
 # @param template {Tilt::ERBTemplate} the template to use
 # @param parameters {Hash} parameters for the templates
 def render_content(target_file, template, parameters)
-  p "Rendering [#{target_file}]"
-  File.open(target_file, 'w') do |file|
-    file.puts(
-      template.render(Object.new, parameters))
+  rendered_content = template.render(Object.new, parameters)
+  existing_content = File.exist?(target_file) ? IO.read(target_file) : nil
+  if existing_content != rendered_content
+    p "Rendering [#{target_file}]"
+    File.open(target_file, 'w', FILE_PERMISSIONS) do |file|
+      file.puts(rendered_content)
+    end
+  else
+    p "No change for [#{target_file}]"
   end
 end
 
@@ -365,7 +373,7 @@ ARTICLES.each_with_index do |article, article_index|
 
   # Create parent dir
   unless File.exist? article_target_dir
-    Dir.mkdir article_target_dir
+    Dir.mkdir(article_target_dir, FILE_PERMISSIONS)
   end
 
   # Render article
