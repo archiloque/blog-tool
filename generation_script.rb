@@ -16,6 +16,7 @@ BLOG_TARGET_PATH = ENV['BLOG_TARGET_PATH']
 BLOG_ROOT_URL = ENV['BLOG_ROOT_URL']
 BLOG_NAME = ENV['BLOG_NAME']
 DISPLAY_ARTICLE_DATE = (ENV['DISPLAY_ARTICLE_DATE'] != 'false')
+CUSTOM_MAIN_CLASS = ENV['CUSTOM_MAIN_CLASS']
 
 LOGO_FILE = 'logo.png'
 
@@ -366,7 +367,8 @@ ARTICLES.each_with_index do |article, article_index|
     :next_article => (article_index != 0) ? ARTICLES[article_index - 1] : nil,
     :previous_article => (article_index != (ARTICLES.length() -1)) ? ARTICLES[article_index + 1] : nil,
     :blog_name => BLOG_NAME,
-    :display_article_date => DISPLAY_ARTICLE_DATE
+    :display_article_date => DISPLAY_ARTICLE_DATE,
+    :custom_main_class => CUSTOM_MAIN_CLASS
   }
 
   article_target_dir = File.join(BLOG_TARGET_PATH, article.dir_name)
