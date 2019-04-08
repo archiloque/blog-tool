@@ -39,6 +39,9 @@
     <% if article.image %>
     <meta property="og:image" content="<%= "#{article.absolute_url}#{article.image}" %>" />
     <meta property="twitter:image" content="<%= "#{article.absolute_url}#{article.image}" %>" />
+    <% else %>
+    <meta property="og:image" content="<%= "site_logo_url" %>" />
+    <meta property="twitter:image" content="<%= "site_logo_url" %>" />
     <% end %>
 
     <script type="application/ld+json">
