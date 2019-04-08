@@ -2,7 +2,7 @@
 <html lang="<%= lang %>">
 <head>
     <meta charset="utf-8">
-    <title>[archiloque.net] <%= Nokogiri::HTML(article.title).text %></title>
+    <title>[archiloque.net] <%= article.text_title %></title>
     <meta name="viewport" content="width=850">
     <meta name="robots" CONTENT="all">
     <link type="text/css" rel="stylesheet" href="../blog.css">
@@ -16,8 +16,8 @@
 
     <meta property="og:site_name" content="archiloque.net"/>
 
-    <meta property="og:title" content="<%= CGI::escapeHTML(Nokogiri::HTML(article.title).text) %>"/>
-    <meta property="twitter:title" content="<%= CGI::escapeHTML(Nokogiri::HTML(article.title).text) %>"/>
+    <meta property="og:title" content="<%= CGI::escapeHTML(article.text_title) %>"/>
+    <meta property="twitter:title" content="<%= CGI::escapeHTML(article.text_title) %>"/>
 
     <% if article.description %>
     <meta name="description" content="<%= CGI::escapeHTML(article.description) %>"/>
@@ -48,7 +48,7 @@
       {
         "@context": "http://schema.org",
         "@type": "NewsArticle",
-        "headline": "[archiloque.net] <%= Nokogiri::HTML(article.title).text %>",
+        "headline": "[archiloque.net] <%= article.text_title %>",
         "datePublished": "<%= article_published.xmlschema %>",
         "dateModified": "<%= article_updated.xmlschema %>",
         <% if article.description %>

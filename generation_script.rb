@@ -127,7 +127,7 @@ class Article
   end
 
   def text_title
-    Nokogiri::HTML(title).xpath("//text()").remove
+    Nokogiri::HTML(title).text
   end
 
   def description
