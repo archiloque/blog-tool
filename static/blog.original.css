@@ -110,6 +110,15 @@ header a:hover, header a:hover, footer a:hover {
     margin-bottom: 0;
 }
 
+.blogHomePageArticleTitle a {
+    text-decoration: none;
+}
+
+.blogHomePageArticleTitle a:hover {
+    text-decoration: underline;
+}
+
+
 blockquote {
     padding-left: 15px;
     padding-right: 15px;
