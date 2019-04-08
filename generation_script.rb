@@ -126,6 +126,10 @@ class Article
     document.doctitle
   end
 
+  def text_title
+    Nokogiri::HTML(title).xpath("//text()").remove
+  end
+
   def description
     document.attributes['article_description']
   end
@@ -281,7 +285,7 @@ rss = RSS::Maker.make('atom') do |maker|
       item.updated = article.last_modified_time.xmlschema
       item.published = article.date.xmlschema
 
-      item.title = article.title
+      item.title = article.text_title
       article.authors.each do |article_author|
         item.authors.new_author do |author|
           author.name = article_author.name
