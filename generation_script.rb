@@ -223,7 +223,8 @@ Dir.glob(File.join(BLOG_SOURCE_PATH, '*')).each do |article_dir|
         :base_dir => article_dir,
         :safe => Asciidoctor::SafeMode::UNSAFE,
         :attributes => {
-          'source-highlighter' => 'pygments'
+          'source-highlighter' => 'pygments',
+          'pygments-style' => 'friendly'
         }
       })
     ARTICLES << Article.new(
