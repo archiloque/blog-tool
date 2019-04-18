@@ -193,6 +193,9 @@ class Article
 
   def fetch_image_size(image_path)
     image_full_path = File.join(source_dir, image_path)
+    unless File.exist? image_full_path
+      raise "[#{image_full_path}] does not exist"
+    end
     FastImage.size(image_full_path, :raise_on_failure => true)
   end
 
