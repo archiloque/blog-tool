@@ -60,7 +60,7 @@ th {
 td,
 th,
 tr {
-    border: 1px white solid;
+    border: 1px #004aa0 solid;
 }
 
 th,
@@ -216,7 +216,7 @@ hr {
     margin-top: 20px;
     margin-bottom: 20px;
     border: none;
-    border-top: solid 1pt white;
+    border-top: solid 1pt #004aa0;
     width: 60%;
 }
   
