@@ -92,8 +92,7 @@
   <h1 id="articleTitle"><%= article.title %></h1>
   <div id="content"<%= custom_main_class ? " class=\"#{custom_main_class}\"" : "" %>>
       <div id="subtitle">
-          <%= article.authors.collect{|author| author.main_url ? "<a href=\"#{author.main_url}\">#{author.name}</a>" : author.name }.join(', ') %>
-          <% if display_article_date %>,<%= article_date %><% end %>
+          <%= article.authors.collect{|author| author.main_url ? "<a href=\"#{author.main_url}\">#{author.name}</a>" : author.name }.join(', ') %><% if display_article_date %>, <%= article_date %><% end %>
       </div>
       <%= article_content %>
   </div>
