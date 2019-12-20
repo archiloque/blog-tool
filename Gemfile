@@ -1,7 +1,11 @@
-source 'https://rubygems.org'
+# frozen_string_literal: true
 
-gem 'asciidoctor', '~> 1.5.8'
-gem 'tilt', '~> 2.0.9'
-gem 'nokogiri', '~> 1.10.1'
+source "https://rubygems.org"
+
+git_source(:github) {|repo_name| "https://github.com/#{repo_name}" }
+
+gem 'asciidoctor', '~> 2.0.10'
+gem 'tilt', '~> 2.0.01'
+gem 'nokogiri', '~> 1.10.7'
 gem 'pygments.rb', '~> 1.2.1'
-gem 'fastimage', '~> 2.1.5'
+gem 'fastimage', '~> 2.1.7'
