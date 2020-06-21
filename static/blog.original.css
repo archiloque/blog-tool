@@ -23,7 +23,7 @@ header {
     text-align: right;
 }
 
-a {
+a, #authors a {
     color: #004aa0;
     text-decoration: underline;
 }
@@ -163,7 +163,7 @@ p {
     max-width: 950px;
 }
 
-#subtitle {
+#authors {
     padding-bottom: 80px;
 }
 
