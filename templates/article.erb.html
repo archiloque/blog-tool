@@ -20,9 +20,9 @@
     <meta property="twitter:title" content="<%= CGI::escapeHTML(article.text_title) %>"/>
 
     <% if article.description %>
-    <meta name="description" content="<%= CGI::escapeHTML(article.description) %>"/>
-    <meta property="og:description" content="<%= CGI::escapeHTML(article.description) %>"/>
-    <meta property="twitter:description" content="<%= CGI::escapeHTML(article.description) %>"/>
+    <meta name="description" content="<%= article.description %>"/>
+    <meta property="og:description" content="<%= article.description %>"/>
+    <meta property="twitter:description" content="<%= article.description %>"/>
     <% end %>
 
     <% if article.authors.first.twitter_handle %>

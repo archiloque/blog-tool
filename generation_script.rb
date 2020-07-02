@@ -131,7 +131,7 @@ class Article
   end
 
   def description
-    document.attributes['article_description']
+    Asciidoctor.convert(document.attributes['article_description'], :doctype => 'inline')
   end
 
   def authors
@@ -399,7 +399,7 @@ ARTICLES.each_with_index do |article, article_index|
   ignore_files = article.ignore_files + [BLOG_ARTICLE_BASE_NAME, 'README.html']
   Dir.glob(File.join(article.source_dir, '*')).each do |attached_file_source|
     attached_file_base_name = File.basename(attached_file_source)
-    unless ignore_files.include? attached_file_base_name
+    unless File.directory?(attached_file_source) || ignore_files.include?(attached_file_base_name)
       attached_file_target = File.join(article_target_dir, attached_file_base_name)
       copy_if_different(attached_file_source, attached_file_target)
       existing_files -= [attached_file_base_name]
