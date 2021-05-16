@@ -1,7 +1,7 @@
 body {
     background-color: #f8fbff;
     color: #004aa0;
-    font-family: "Futura", Calibri, sans-serif;
+    font-family: "Gill Sans", "Futura", Calibri, sans-serif;
     font-size: 18px;
     line-height: 32px;
 }
@@ -31,6 +31,10 @@ pre, code {
     font-family: "JetBrains Mono", "Lucida Console", Consolas, Monaco, monospace;
     font-size: 14px;
     line-height: 16px;
+}
+
+em {
+    font-weight: lighter;
 }
 
 .imageblock {
