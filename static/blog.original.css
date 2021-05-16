@@ -32,8 +32,8 @@ a:hover {
     text-decoration: none;
 }
 
-pre {
-    font-family: "Lucida Console", Consolas, Monaco, monospace;
+pre, code { 
+    font-family: "JetBrains Mono", "Lucida Console", Consolas, Monaco, monospace;
     font-size: 14px;
     line-height: 16px;
 }
