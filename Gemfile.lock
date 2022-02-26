@@ -3,12 +3,14 @@ GEM
   specs:
     asciidoctor (2.0.10)
     fastimage (2.1.7)
-    mini_portile2 (2.4.0)
+    mini_portile2 (2.8.0)
     multi_json (1.14.1)
-    nokogiri (1.10.9)
-      mini_portile2 (~> 2.4.0)
+    nokogiri (1.13.2)
+      mini_portile2 (~> 2.8.0)
+      racc (~> 1.4)
     pygments.rb (1.2.1)
       multi_json (>= 1.0.0)
+    racc (1.6.0)
     tilt (2.0.10)
 
 PLATFORMS
@@ -17,7 +19,7 @@ PLATFORMS
 DEPENDENCIES
   asciidoctor (~> 2.0.10)
   fastimage (~> 2.1.7)
-  nokogiri (~> 1.10.9)
+  nokogiri (~> 1.13.2)
   pygments.rb (~> 1.2.1)
   tilt (~> 2.0.01)
 
