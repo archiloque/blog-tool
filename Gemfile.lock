@@ -1,25 +1,25 @@
 GEM
   remote: https://rubygems.org/
   specs:
-    asciidoctor (2.0.10)
-    fastimage (2.1.7)
-    mini_portile2 (2.4.0)
-    multi_json (1.14.1)
-    nokogiri (1.10.9)
-      mini_portile2 (~> 2.4.0)
-    pygments.rb (1.2.1)
-      multi_json (>= 1.0.0)
+    asciidoctor (2.0.17)
+    fastimage (2.2.6)
+    mini_portile2 (2.8.0)
+    nokogiri (1.13.5)
+      mini_portile2 (~> 2.8.0)
+      racc (~> 1.4)
+    pygments.rb (2.3.0)
+    racc (1.6.0)
     tilt (2.0.10)
 
 PLATFORMS
   ruby
 
 DEPENDENCIES
-  asciidoctor (~> 2.0.10)
-  fastimage (~> 2.1.7)
-  nokogiri (~> 1.10.9)
-  pygments.rb (~> 1.2.1)
-  tilt (~> 2.0.01)
+  asciidoctor (~> 2.0.17)
+  fastimage (~> 2.2.6)
+  nokogiri (~> 1.13.5)
+  pygments.rb (~> 2.3.0)
+  tilt (~> 2.0.10)
 
 BUNDLED WITH
-   2.1.4
+   2.3.10
