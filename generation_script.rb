@@ -59,8 +59,8 @@ end
 SITE_LOGO_URL = "#{BLOG_ROOT_URL}#{LOGO_FILE}"
 SITE_LOGO_SIZE = FastImage.size("static/#{LOGO_FILE}", :raise_on_failure => true)
 
-unless Dir.exist? BLOG_TARGET_PATH
-  FileUtils.mkpath(BLOG_TARGET_PATH, {:mode => FILE_PERMISSIONS})
+unless Dir.exist?(BLOG_TARGET_PATH)
+  FileUtils.mkpath(BLOG_TARGET_PATH)
 end
 
 class Author
@@ -206,10 +206,10 @@ end
   BLOG_TARGET_PATH,
   BLOG_SOURCE_PATH,
   ].each do |dir|
-  unless Dir.exist? dir
+  unless Dir.exist?(dir)
     raise "[#{dir}] does not exist"
   end
-  unless File.directory? dir
+  unless File.directory?(dir)
     raise "[#{dir}] is not a directory"
   end
 end
@@ -413,7 +413,6 @@ ARTICLES.each_with_index do |article, article_index|
     p "Deleting [#{file_to_delete_with_path}]"
     File.delete file_to_delete_with_path
   end
-
 end
 
 BLOG_ORIGINAL_CSS_FILE = 'blog.original.css'
