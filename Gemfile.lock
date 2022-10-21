@@ -4,7 +4,7 @@ GEM
     asciidoctor (2.0.17)
     fastimage (2.2.6)
     mini_portile2 (2.8.0)
-    nokogiri (1.13.5)
+    nokogiri (1.13.9)
       mini_portile2 (~> 2.8.0)
       racc (~> 1.4)
     pygments.rb (2.3.0)
@@ -17,7 +17,7 @@ PLATFORMS
 DEPENDENCIES
   asciidoctor (~> 2.0.17)
   fastimage (~> 2.2.6)
-  nokogiri (~> 1.13.5)
+  nokogiri (~> 1.13.9)
   pygments.rb (~> 2.3.0)
   tilt (~> 2.0.10)
 
