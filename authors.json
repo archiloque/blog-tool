@@ -1,6 +1,6 @@
 {
   "Julien Kirch": {
-    "main_url": "https://twitter.com/archiloque",
+    "main_url": "https://mastodon.social/@archiloque",
     "twitter_handle": "@archiloque",
     "default_author": true
   },
@@ -9,7 +9,7 @@
     "twitter_handle": "@clunven"
   },
   "tef": {
-    "main_url": "https://twitter.com/tef_ebooks",
+    "main_url": "http://cohost.org/tef",
     "twitter_handle": "@tef_ebooks"
   }
 }
