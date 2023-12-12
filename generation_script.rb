@@ -99,7 +99,7 @@ class Article
     @source_dir = source_dir
     @date = Date.parse(document.revdate)
     @last_modified_time = last_modified_time
-    @raw_content = document.render
+    @raw_content = document.render.gsub('&#8201;&#8212;&#8201;', '&#8239;&#8212;&#8201;')
     @parsed_content = Nokogiri::HTML::fragment(@raw_content)
     improve_images
     create_feed_content
