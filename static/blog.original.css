@@ -164,7 +164,6 @@ blockquote:after {
 blockquote:before {
     content: "\201C";
     left: -30px;
-    top: 20px;
 }
 
 blockquote:after {
