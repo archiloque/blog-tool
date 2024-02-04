@@ -64,8 +64,6 @@ em {
 }
 
 table {
-    *border-collapse: collapse;
-    /* IE7 and lower */
     border-spacing: 0;
 }
 
@@ -172,7 +170,6 @@ blockquote:before {
 blockquote:after {
     content: "\201D";
     right: -30px;
-    bottom: 15px;
 }
 
 @media (max-width: 1250px) {
@@ -189,6 +186,7 @@ blockquote:after {
 p {
     margin-top: 10px;
     margin-bottom: 15px;
+    text-wrap: balance;
 }
 
 #articleTitle {
